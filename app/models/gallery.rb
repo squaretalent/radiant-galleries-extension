@@ -14,20 +14,4 @@ class Gallery < ActiveRecord::Base
     "/gallery/#{self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')}"
   end
   
-  def layout
-    unless custom_layout.blank?
-      custom_layout
-    else
-      Radiant::Config['galleries.gallery_layout'] || 'Gallery'
-    end
-  end
-  
-  def item_layout
-    unless custom_item_layout.blank?
-      custom_item_layout
-    else
-      Radiant::Config['galleries.item_layout'] || 'GalleryItem'
-    end
-  end
-  
 end

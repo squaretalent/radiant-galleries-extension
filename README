@@ -1,5 +1,9 @@
 = Galleries
 
+Simple, allows you to create Galleries with Items, items have an .image which is just an asset from paperclipped.
+
+You output a gallery within a Page of type Gallery. You can then assign a layout and a gallery to the page.
+
 Galleries have images.
 
 Images have assets, assets are created with paperclipped.

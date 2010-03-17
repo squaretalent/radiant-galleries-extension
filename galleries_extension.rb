@@ -28,12 +28,17 @@ class GalleriesExtension < Radiant::Extension
     UserActionObserver.class_eval do
       observe Gallery, GalleryItem
     end
-    GalleryPage.send(:include, GalleryTags, GalleryItemTags)
+    GalleryPage.send(:include, GalleryTags, GalleryItemTags, PageExtensionsForGallery)
+    
+    Page.class_eval {
+      include GalleryTags
+      include GalleryItemTags
+    }
     
     tab 'Content' do
       add_item 'Galleries', '/admin/galleries', :after => 'Pages'
     end
     
-    admin.page.edit.add :layout_row, 'gallery' if admin.respond_to?(:page)
+    admin.page.edit.add :layout_row, 'gallery' if admin.respond_to?(:page)    
   end
 end

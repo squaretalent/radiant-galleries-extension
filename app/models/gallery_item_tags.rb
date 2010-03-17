@@ -49,7 +49,7 @@ module GalleryItemTags
   
   desc %{
     Return the url for the image, specify style if wanting thumb etc
-    <pre><code><r:gallery:item:image [style='thumbnail']>
+    <pre><code><r:gallery:item:image [style='thumbnail']></code></pre>
   }
   tag 'gallery:item:image' do |tag|
     if tag.attr['style'].nil?

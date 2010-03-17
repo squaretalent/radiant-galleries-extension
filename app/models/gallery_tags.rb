@@ -59,6 +59,10 @@ protected
       Gallery.find(:handle, :conditions => {:handle => tag.attr['handle']})
     elsif tag.attr['title']
       Gallery.find(:first, :conditions => {:title => tag.attr['title']})
+    elsif @current_gallery
+      @current_gallery
+    elsif tag.locals.page.gallery
+      tag.locals.page.gallery
     end
   end
   
