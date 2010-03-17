@@ -1,0 +1,9 @@
+= Galleries
+
+Galleries have images.
+
+Images have assets, assets are created with paperclipped.
+
+Allows a gallery to re-use assets by creating a new image.
+
+Deleting an images shouldn't delete the asset (unless requested...todo etc)

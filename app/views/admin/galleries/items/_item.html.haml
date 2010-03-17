@@ -1,0 +1,6 @@
+%li.item{:'data-id' => item.id}
+  - unless item.image.nil?
+    %span.image= item.image.thumbnail(:icon)
+  %span.title= item.title
+  .actions
+    %span.delete delete

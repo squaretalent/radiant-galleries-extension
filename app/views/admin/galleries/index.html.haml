@@ -1,0 +1,13 @@
+#galleries
+
+  %h2 Galleries
+  %p Galleries store images
+  
+  - unless @galleries.empty?
+    %ul#galleries_list
+      - @galleries.each do |gallery|
+        %li.gallery
+          %span.title=gallery.title
+          - unless gallery.items.empty?
+            %ul.gallery_items
+              = render :partial => '/admin/galleries/items/item', :collection => gallery.items
