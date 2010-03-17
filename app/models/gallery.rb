@@ -8,8 +8,10 @@ class Gallery < ActiveRecord::Base
   validates_uniqueness_of :title
   validates_uniqueness_of :handle
   
+  attr_accessible :title, :handle, :caption, :slug
+  
   def slug
-    '/gallery/#{self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')}'
+    "/gallery/#{self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')}"
   end
   
   def layout

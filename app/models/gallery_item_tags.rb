@@ -34,10 +34,17 @@ module GalleryItemTags
     tag.expand  
   end
   
-  [:title, :caption, :handle, :slug].each do |symbol|
+  [:title, :caption, :handle].each do |symbol|
     tag "gallery:item:#{symbol}" do |tag|
-      tag.locals.item.title unless tag.locals.item.nil?
+      unless tag.locals.item.nil?
+        hash = tag.locals.item
+        hash[symbol]
+      end
     end
+  end
+  
+  tag 'gallery:item:slug' do |tag|
+    tag.locals.item.slug unless tag.locals.item.nil?
   end
   
   desc %{

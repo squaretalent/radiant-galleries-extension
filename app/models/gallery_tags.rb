@@ -25,10 +25,17 @@ module GalleryTags
     tag.expand unless tag.locals.gallery.nil?
   end
   
-  [:title, :caption, :handle, :slug].each do |symbol|
+  [:title, :caption, :handle].each do |symbol|
     tag "gallery:#{symbol}" do |tag|
-      tag.locals.item.title unless tag.locals.item.nil?
+      unless tag.locals.gallery.nil?
+        hash = tag.locals.gallery
+        hash[symbol]
+      end
     end
+  end
+    
+  tag 'gallery:slug' do |tag|
+    tag.locals.gallery.slug unless tag.locals.item.nil?
   end
   
   tag 'gallery:if_items' do |tag|
