@@ -11,12 +11,8 @@ class GalleryItem < ActiveRecord::Base
   validates_uniqueness_of :title
   validates_uniqueness_of :handle
   
-  def to_param
-    handle
-  end
-  
-  def url 
-    'gallery/item/#{to_param}'
+  def slug
+    '/gallery/item/#{self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')}'
   end
   
   def layout

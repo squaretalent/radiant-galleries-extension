@@ -2,6 +2,7 @@ class CreateGalleryItems < ActiveRecord::Migration
   def self.up
     create_table :gallery_items do |t|
       t.string  :title,   :limit => 255,  :null => false
+      t.string  :caption, :limit => 255,  :null => false
       t.string  :handle,  :limit => 255,  :null => false
       
       t.integer :asset_id

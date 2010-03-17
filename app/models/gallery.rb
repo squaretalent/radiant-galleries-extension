@@ -1,6 +1,6 @@
 class Gallery < ActiveRecord::Base
   
-  has_many :items, :class_name => 'GalleryItem', :foreign_key => :gallery_id, :dependent => :destroy
+  has_many :items, :order => 'position', :class_name => 'GalleryItem', :foreign_key => :gallery_id, :dependent => :destroy
   
   validates_presence_of :title
   validates_presence_of :handle
@@ -8,12 +8,8 @@ class Gallery < ActiveRecord::Base
   validates_uniqueness_of :title
   validates_uniqueness_of :handle
   
-  def to_param
-    handle
-  end
-  
-  def url
-    '/gallery/#{to_param}'
+  def slug
+    '/gallery/#{self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')}'
   end
   
   def layout

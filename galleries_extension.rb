@@ -13,8 +13,8 @@ class GalleriesExtension < Radiant::Extension
         gallery.resources :items
       end
     end
-    map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show', :handle => /([\w\_]+)\z?/
-    map.connect 'gallery/item/:handle', :controller => 'galleries/items', :action => 'show', :handle => /([\w\_]+)\z?/
+    map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'
+    map.connect 'gallery/item/:handle', :controller => 'galleries/items', :action => 'show'
   end
   
   extension_config do |config|
