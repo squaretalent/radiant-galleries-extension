@@ -1,3 +1,4 @@
-%p
-  %label{:for => 'page_gallery_id'} Gallery
-  = collection_select :page, :gallery_id, Gallery.all, :id, :title
+- if @page.class_name == "GalleryPage"
+  %p
+    %label{:for => 'page_gallery_id'} Gallery
+    = collection_select :page, :gallery_id, Gallery.all, :id, :title

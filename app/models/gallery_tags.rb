@@ -8,6 +8,7 @@ module GalleryTags
   end
   
   tag 'galleries:each' do |tag|
+    content = ''
     Galleries.each do |gallery|
       tag.locals.gallery = gallery
       content << tag.expand
@@ -53,3 +54,5 @@ protected
       Gallery.find(:first, :conditions => {:title => tag.attr['title']})
     end
   end
+  
+end

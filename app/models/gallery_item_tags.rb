@@ -8,12 +8,13 @@ module GalleryItemTags
   end
   
   tag 'gallery:items:size' do |tag|
-    gallery = GalleryTags.find_gallery(tag)
+    gallery = find_gallery(tag)
     gallery.items.size
   end
   
   tag 'gallery:items:each' do |tag|
-    gallery = GalleryTags.find_gallery(tag)
+    content = ''
+    gallery = find_gallery(tag)
     unless gallery.nil?
       gallery.items.each do |item|
         tag.locals.item = item
@@ -26,9 +27,7 @@ module GalleryItemTags
   
   desc %{
     Select gallery item based on id, handle, name or position
-    <pre><code><r:gallery>
-      <r:item [id='id'] [handle='handle'] [name='name'] [position='position']>...</r:item>
-    </r:gallery></code></pre>
+    <pre><code><r:gallery:item [id='id'] [handle='handle'] [name='name'] [position='position']>...</r:gallery:item></code></pre>
   }
   tag 'gallery:item' do |tag|     
     tag.locals.item = find_item(tag)    
@@ -50,7 +49,8 @@ module GalleryItemTags
       style = 'original'
     else
       style = tag.attr['style']
-    tag.locals.item.image(style.to_sym) unless tag.locals.item.nil?
+    end
+    tag.locals.item.image.thumbnail(style.to_sym) unless tag.locals.item.nil?
   end
   
 protected
@@ -61,10 +61,10 @@ protected
     elsif tag.attr['id']
       GalleryItem.find(tag.attr['id'])
     elsif tag.attr['handle']
-      GalleryItem.find(:first, :conditions => {:handle => tag.attr['handle'])
+      GalleryItem.find(:first, :conditions => {:handle => tag.attr['handle']})
     elsif tag.attr['title']
       GalleryItem.find(:first, :conditions => {:title => tag.attr['title']})
-    elsif tag.attr['position']
+    else tag.attr['position']
       GalleryItem.find(:first, :conditions => {:position => tag.attr['position']})
     end
   end
