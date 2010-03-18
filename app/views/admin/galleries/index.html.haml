@@ -1,13 +1,52 @@
-#galleries
+- @page_title = 'Galleries - ' + default_page_title
+= render 'head'
+
+#galleries_content
 
   %h2 Galleries
-  %p Galleries store images
+  %p Galleries let you organise items you want your visitors to see
   
-  - unless @galleries.empty?
-    %ul#galleries_list
-      - @galleries.each do |gallery|
-        %li.gallery
-          %span.title=gallery.title
-          - unless gallery.items.empty?
-            %ul.gallery_items
-              = render :partial => '/admin/galleries/items/item', :collection => gallery.items
+  #galleries
+    - unless @galleries.empty?
+      %ul#galleries_list
+        - @galleries.each do |gallery|
+          %li.gallery
+            %span.title= gallery.title
+      
+  #gallery
+    #gallery_fields
+      %input#gallery_title{:name => 'gallery[title]'}
+      %input#gallery_id{:name => 'gallery[id]', :type => 'hidden'}
+    #gallery_items
+      %span.note you can drag these items around to reorder them
+      %ul#gallery_items_list
+        %li#gallery_items_list_empty.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Drag Items Over
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item          
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+      #gallery_items_remove
+        %span.title you can drop an item here to remove it
+              
+#assets_content
+
+  %h2 Items
+  %p The following items can be dragged into the gallery
+  
+  #assets_create
+    %span.title New Item
+  
+  %ul#assets_list
+    %li#assets_list_empty
+      %span.title Nothing Available
+      %sapn.description Create an item to start

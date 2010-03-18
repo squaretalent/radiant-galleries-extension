@@ -3,6 +3,10 @@ module GalleryTags
   
   class GalleryTagError < StandardError; end
   
+  tag 'pagey' do |tag|
+    return tag.locals.page.inspect
+  end
+  
   tag 'galleries' do |tag|
     tag.expand
   end
@@ -51,7 +55,9 @@ module GalleryTags
 protected
   
   def find_gallery(tag)
-    if tag.locals.gallery
+    if tag.locals.page.gallery
+      tag.locals.page.gallery
+    elsif tag.locals.gallery
       tag.locals.gallery
     elsif tag.attr['id']
       Gallery.find(tag.attr['id'])
@@ -59,10 +65,6 @@ protected
       Gallery.find(:handle, :conditions => {:handle => tag.attr['handle']})
     elsif tag.attr['title']
       Gallery.find(:first, :conditions => {:title => tag.attr['title']})
-    elsif @current_gallery
-      @current_gallery
-    elsif tag.locals.page.gallery
-      tag.locals.page.gallery
     end
   end
   

@@ -5,8 +5,8 @@ class CreateGalleries < ActiveRecord::Migration
       t.string  :caption, :limit => 255,  :null => false
       t.string  :handle,  :limit => 255,  :null => false
       
-      t.string  :custom_layout, :limit => 255
-      t.string  :custom_item_layout, :limit => 255
+      t.string  :custom_layout,       :limit => 255
+      t.string  :custom_item_layout,  :limit => 255
       
       t.integer :created_by
       t.integer :updated_by

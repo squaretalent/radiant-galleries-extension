@@ -3,10 +3,10 @@ class GalleriesController < ApplicationController
   no_login_required
   
   def show
-    @gallery = Gallery.find(:first, :conditions => ['LOWER(handle) = ?', params[:handle]]))
+    @gallery = Gallery.find(:first, :conditions => ['LOWER(handle) = ?', params[:handle]])
     @title = @gallery.title
     
-    @radiant_layout = @shop_category.layout
+    @radiant_layout = @gallery.layout
   end
 
 end
