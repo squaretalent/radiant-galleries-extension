@@ -1,0 +1,65 @@
+- @selected = :content
+- @title = 'Galleries - Radiant CMS - Publishing for Small Teams'
+- content_for :meta do 
+  = render :partial => 'head'
+  
+#galleries_content
+
+  %h2 Galleries
+  %p Galleries let you organise items you want your visitors to see
+
+  #galleries
+    #gallery_create.gallery
+      %span.title New Gallery
+    %ul#galleries_list
+      %li.gallery{:'data-id' => 1}
+        %span.title Guys
+      %li.gallery{:'data-id' => 2}
+        %span.title Gals
+      %li.gallery{:'data-id' => 3}
+        %span.title Kids
+      %li#galleries_empty.gallery
+        %span.title Nothing Yet
+  #gallery
+    #gallery_fields
+      %input#gallery_title{:name => 'gallery[title]'}
+      %input#gallery_id{:name => 'gallery[id]', :type => 'hidden'}
+    #gallery_items
+      %span.note you can drag these items around to reorder them
+      %ul#gallery_items_list
+        %li#gallery_items_list_empty.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Drag Items Over
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item          
+        %li.gallery_item
+          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+          %span.title Some Item
+      #gallery_items_remove
+        %span.title you can drop an item here to remove it
+
+#assets_content
+
+  %h2 Items
+  %p The following items can be dragged into the gallery
+
+  #assets
+
+    #asset_create.asset
+      %span.title New Item
+
+    %ul#assets_list
+      %li.asset{:'data-id' => 1}
+        %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
+        %span.title An Item
+        %span.caption An Items caption is kept here in the caption area
+      %li#assets_empty.asset
+        %span.title No Items Yet
+        %sapn.caption Create a new item to get started

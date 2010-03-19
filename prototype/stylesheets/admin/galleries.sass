@@ -69,12 +69,11 @@ body
               :weight     bold
         
         &#galleries_empty
-          :color        = !gray
+          :color        = !gray_dark
           :cursor         default
           
           &:hover
             :background   transparent
-            :color      = !gray
     
     #gallery
       :float              left
@@ -156,6 +155,9 @@ body
                 :size     90%
                 :weight   bold
                 
+            .caption
+              :display    none
+                
             &:hover
               
               img, .title
@@ -217,6 +219,9 @@ body
         &:hover
           :background
             :color        transparent
+            
+          .caption
+            :color      = !gray_dark !important
     
       .asset
         :height         = !line_height*5
@@ -233,10 +238,15 @@ body
           :background
             :color      = !blue_dark
           :color        = !blue_light
-          
-          &.current
-            :font
-              :weight     bold
+            
+          .caption
+            :color      = !gray
+              
+        img
+          :float          left
+          :height       = !line_height*4
+          :margin       = !line_height*0.5
+            :left         0
               
         .title
           :display        block
@@ -246,6 +256,7 @@ body
         .caption
           :display        block
           :line
-            :height       = !line_height*1.5
+            :height     = !line_height*1.25
           :font
             :size         85%
+          :color        = !gray_dark
