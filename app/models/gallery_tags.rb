@@ -61,8 +61,8 @@ protected
       Gallery.find(:handle, :conditions => {:handle => tag.attr['handle']})
     elsif tag.attr['title']
       Gallery.find(:first, :conditions => {:title => tag.attr['title']})
-    elsif find_item(tag)
-      find_item(tag).gallery
+    elsif find_gallery_item(tag)
+      find_gallery_item(tag).gallery
     else
       Gallery.find(:first, :conditions => {:handle => tag.locals.page.slug})
     end

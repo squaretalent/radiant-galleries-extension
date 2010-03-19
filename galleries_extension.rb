@@ -14,7 +14,7 @@ class GalleriesExtension < Radiant::Extension
       end
     end
     map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'
-    map.connect 'gallery/item/:handle', :controller => 'galleries/items', :action => 'show'
+    map.connect 'gallery/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show'
   end
   
   extension_config do |config|

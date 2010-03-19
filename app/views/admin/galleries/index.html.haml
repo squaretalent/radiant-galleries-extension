@@ -51,6 +51,8 @@
       %span.title New Item
   
     %ul#assets_list
+      -# unless @assets.empty?
+        = render :partial => 'assets', :collection => @assets
       %li#assets_empty.asset
         %span.title No Items Available
         %sapn.caption Create a new item to get started

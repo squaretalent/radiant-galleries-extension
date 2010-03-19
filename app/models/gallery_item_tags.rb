@@ -29,7 +29,7 @@ module GalleryItemTags
     <pre><code><r:gallery:item [id='id'] [handle='handle'] [name='name'] [position='position']>...</r:gallery:item></code></pre>
   }
   tag 'gallery:item' do |tag|
-    tag.locals.item = find_item(tag)
+    tag.locals.item = find_gallery_item(tag)
     tag.expand unless tag.locals.item.nil?
   end
   
@@ -60,13 +60,13 @@ module GalleryItemTags
   end
 
   tag 'pagey' do |tag|
-    tag.locals.item = find_item(tag)
+    tag.locals.item = find_gallery_item(tag)
     tag.locals.item.inspect
   end
   
 protected
 
-  def find_item(tag)
+  def find_gallery_item(tag)
     if tag.locals.item
       tag.locals.item
     elsif tag.attr['id']
