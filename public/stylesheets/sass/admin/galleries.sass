@@ -9,7 +9,8 @@
 !blue_dark                = #366c92
 !green_light              = #c5e2be
 !green                    = #58824e
-!red                      = #cc0000
+!red                      = #880000
+!red_light                = #cd6464
 !tan                      = #cac8c0
 
 body
@@ -24,12 +25,48 @@ body
     :width                63%
     :min
       :width              610px
-    :margin               0 2% 0 0
+    :margin
+      :right              2%
+      :bottom           = !line_height*2
     
     #galleries
       :float              left
-      :width              12%
-      :margin             0 3% 0 0
+      :width              15%
+      :margin             0
+    
+      #gallery_create
+        :margin
+          :bottom       = !line_height
+        :background
+          :color        = !green_light
+        :color          = !green
+        :font
+          :weight         bold
+          
+        &:hover, &.current
+          :background
+            :color      = !green
+          :color        = !green_light
+    
+      .gallery
+        :height         = !line_height*2
+        :line
+          :height       = !line_height*2
+        :font
+          :size         = !line_height*0.85
+        :padding          0 10px
+        :color          = !blue_dark
+        :cursor           pointer
+        :overflow         hidden
+        
+        &:hover, &.current
+          :background
+            :color      = !blue_dark
+          :color        = !blue_light
+          
+          &.current
+            :font
+              :weight     bold
     
     #gallery
       :float              left
@@ -76,6 +113,7 @@ body
           :padding        1.5%
           :overflow       hidden
           :border       = "1px solid #{!gray_dark}"
+            :bottom       0
           :background
             :color      = !white
             
@@ -115,8 +153,91 @@ body
               img, .title
               :background
                 :color  = !gray
+                
+        #gallery_items_remove
+          :display        block
+          :width          97%
+          :padding        0 1.5%
+          :height       = !line_height*3
+          :line
+            :height     = !line_height*3
+          :text
+            :indent     = !line_height
+          :font
+            :weight       bold
+            :style        italic
+            :size       = !line_height*0.75
+          :background
+            :color      = !red_light
+          :color        = !white
+          :border       = "1px solid #{!gray_dark}"
+            :top          0
+          :cursor         default
+          
+          &.drop
+            :background
+              :color    = !red
     
   #assets_content
     :float                left
     :width                33%
     :margin               0 0 0 2%
+    
+    #assets
+    
+      #asset_create
+        :height         = !line_height*2
+        :line
+          :height       = !line_height*2
+        :margin
+          :bottom       = !line_height
+        :background
+          :color        = !green_light
+        :color          = !green
+        :font
+          :weight         bold
+          
+        &:hover, &.current
+          :background
+            :color      = !green
+          :color        = !green_light
+          
+      #assets_empty
+        :color          = !gray_dark
+        :cursor           default
+        
+        &:hover
+          :background
+            :color        transparent
+    
+      .asset
+        :height         = !line_height*5
+        :line
+          :height       = !line_height*2
+        :font
+          :size         = !line_height*0.85
+        :padding          0 10px
+        :color          = !blue_dark
+        :cursor           pointer
+        :overflow         hidden
+        
+        &:hover, &.current
+          :background
+            :color      = !blue_dark
+          :color        = !blue_light
+          
+          &.current
+            :font
+              :weight     bold
+              
+        .title
+          :display        block
+          :font
+            :weight       bold
+            
+        .caption
+          :display        block
+          :line
+            :height       = !line_height*1.5
+          :font
+            :size         85%

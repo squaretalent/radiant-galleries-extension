@@ -24,14 +24,13 @@ module GalleryItemTags
     end
   end
   
-  
   desc %{
     Select gallery item based on id, handle, name or position
     <pre><code><r:gallery:item [id='id'] [handle='handle'] [name='name'] [position='position']>...</r:gallery:item></code></pre>
   }
-  tag 'gallery:item' do |tag|     
-    tag.locals.item = find_item(tag)    
-    tag.expand  
+  tag 'gallery:item' do |tag|
+    tag.locals.item = find_item(tag)
+    tag.expand unless tag.locals.item.nil?
   end
   
   [:title, :caption, :handle].each do |symbol|
@@ -59,6 +58,11 @@ module GalleryItemTags
     end
     tag.locals.item.image.thumbnail(style.to_sym) unless tag.locals.item.nil?
   end
+
+  tag 'pagey' do |tag|
+    tag.locals.item = find_item(tag)
+    tag.locals.item.inspect
+  end
   
 protected
 
@@ -71,8 +75,10 @@ protected
       GalleryItem.find(:first, :conditions => {:handle => tag.attr['handle']})
     elsif tag.attr['title']
       GalleryItem.find(:first, :conditions => {:title => tag.attr['title']})
-    else tag.attr['position']
+    elsif tag.attr['position']
       GalleryItem.find(:first, :conditions => {:position => tag.attr['position']})
+    else
+      GalleryItem.find(:first, :conditions => {:handle => tag.locals.page.slug})
     end
   end
 

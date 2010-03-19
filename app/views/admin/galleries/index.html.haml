@@ -7,6 +7,8 @@
   %p Galleries let you organise items you want your visitors to see
   
   #galleries
+    #gallery_create.gallery
+      %span.title New Gallery
     - unless @galleries.empty?
       %ul#galleries_list
         - @galleries.each do |gallery|
@@ -43,10 +45,12 @@
   %h2 Items
   %p The following items can be dragged into the gallery
   
-  #assets_create
-    %span.title New Item
+  #assets
   
-  %ul#assets_list
-    %li#assets_list_empty
-      %span.title Nothing Available
-      %sapn.description Create an item to start
+    #asset_create.asset
+      %span.title New Item
+  
+    %ul#assets_list
+      %li#assets_empty.asset
+        %span.title No Items Available
+        %sapn.caption Create a new item to get started
