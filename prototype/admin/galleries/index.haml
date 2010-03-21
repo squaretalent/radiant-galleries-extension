@@ -1,4 +1,4 @@
-- @selected = :content
+- @selected = :galleries
 - @title = 'Galleries - Radiant CMS - Publishing for Small Teams'
 - content_for :meta do 
   = render :partial => 'head'
@@ -22,26 +22,29 @@
         %span.title Nothing Yet
   #gallery
     #gallery_fields
-      %input#gallery_title{:name => 'gallery[title]'}
-      %input#gallery_id{:name => 'gallery[id]', :type => 'hidden'}
+      = render :partial => 'fields'
     #gallery_items
       %span.note you can drag these items around to reorder them
       %ul#gallery_items_list
-        %li#gallery_items_list_empty.gallery_item
+        %li#gallery_items_list_empty.gallery_item{:'data-item_id' => nil}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
           %span.title Drag Items Over
-        %li.gallery_item
+        %li#gallery_item_1.gallery_item{:'data-item_id' => 1, :'data-asset_it' => 2}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Some Item
-        %li.gallery_item
+          %span.title Item 1
+          %span.caption An Items caption is kept here in the caption area
+        %li#gallery_item_2.gallery_item{:'data-item_id' => 2, :'data-asset_it' => 3}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Some Item
-        %li.gallery_item
+          %span.title Item 2
+          %span.caption An Items caption is kept here in the caption area
+        %li#gallery_item_3.gallery_item{:'data-item_id' => 3, :'data-asset_it' => 4}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Some Item          
-        %li.gallery_item
+          %span.title Item 3
+          %span.caption An Items caption is kept here in the caption area
+        %li#gallery_item_4.gallery_item{:'data-item_id' => 4, :'data-asset_it' => 5}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Some Item
+          %span.title Item 4
+          %span.caption An Items caption is kept here in the caption area
       #gallery_items_remove
         %span.title you can drop an item here to remove it
 
@@ -56,10 +59,10 @@
       %span.title New Item
 
     %ul#assets_list
-      %li.asset{:'data-id' => 1}
+      %li#asset_1.asset{:'data-item_id' => nil, :'data-asset_id' => 1}
         %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
         %span.title An Item
         %span.caption An Items caption is kept here in the caption area
-      %li#assets_empty.asset
-        %span.title No Items Yet
-        %sapn.caption Create a new item to get started
+      %li#assets_empty.asset{:'data-asset_id' => nil}
+        %span.title No Items Left
+        %sapn.caption Create an item to get started

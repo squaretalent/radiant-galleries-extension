@@ -32,7 +32,7 @@ module ViewHelpers
   def nav_tabs
     content = NavTab.new(:content, "Content")
     content << NavSubItem.new(:pages, "Pages", "/admin/pages/")
-    content << NavSubItem.new(:pages, "Galleries", "/admin/galleries/")
+    content << NavSubItem.new(:galleries, "Galleries", "/admin/galleries/")
     
     shop = NavTab.new(:shop, "Shop")
     shop << NavSubItem.new(:products, "Products", "/admin/products/")

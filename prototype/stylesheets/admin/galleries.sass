@@ -14,6 +14,8 @@
 !tan                      = #cac8c0
 
 body
+  :min
+    :width                1024px
   :height                 100%
   :background
     :color              = !blue_light
@@ -130,6 +132,7 @@ body
             :width        23%
             :height     = !line_height*9
             :margin       1%
+            :cursor       move
             
             img
               :max
@@ -154,6 +157,7 @@ body
               :font
                 :size     90%
                 :weight   bold
+              :overflow   hidden
                 
             .caption
               :display    none
@@ -184,7 +188,7 @@ body
             :top          0
           :cursor         default
           
-          &.drop
+          &.over
             :background
               :color    = !red
     
@@ -206,6 +210,7 @@ body
         :color          = !green
         :font
           :weight         bold
+        :cursor           pointer
           
         &:hover, &.current
           :background
@@ -231,7 +236,7 @@ body
           :size         = !line_height*0.85
         :padding          0 10px
         :color          = !blue_dark
-        :cursor           pointer
+        :cursor           move
         :overflow         hidden
         
         &:hover, &.current
