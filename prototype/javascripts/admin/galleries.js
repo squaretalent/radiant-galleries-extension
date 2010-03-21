@@ -1,68 +1,73 @@
+var GalleryAsset = {};
+
 document.observe("dom:loaded", function() {
   gallery = new Gallery();
-  gallery.AssetsDrop();
   gallery.ItemRemove();
   gallery.ItemsSort();
   
-  galleryAsset = new GalleryAsset();
-  galleryAsset.MakeDraggables();
+  Event.addBehavior({
+    '#assets_list .asset:not(#assets_empty)' : GalleryAsset.SendItem
+  });
 });
 
-var GalleryAsset = Class.create({
-  MakeDraggables: function() { 
-    $$('#assets_list li.asset').each(function(element){
-      new Draggable(element, { 
-        revert: true
-      });
-    });
+GalleryAsset.SendItem = Behavior.create({
+  
+  onclick: function() { 
+    gallery.ItemAdd(this.element);
   }
+  
 });
 
 var Gallery = Class.create({
-  AssetsDrop: function() {
-    Droppables.add($('gallery_items_list'), {
-      accept: ['asset'],
-      onHover: function(element) {
-        this.element.insert({ 'bottom': element.removeClassName('asset').addClassName('gallery_item')});
-      
-        new Ajax.Request('/admin/galleries/items/create.json?' + new Date().getTime(), { 
-          method: 'get', //TODO this will be a put
-          parameters: {'id':element.getAttribute('data-id')},
-          onSuccess: function(data) {
-            this.response = data.responseText.evalJSON();
-            element.id = "gallery_item_" + this.response.id;
-          }
-        });
-      }
+  
+  ItemAdd: function(element) {
+    new Ajax.Request($('create_gallery_item_path').value + '.json?' + new Date().getTime(), { 
+      method: 'get', //TODO this will be a put
+      parameters: {'id' : element.getAttribute('data-asset_id')},
+      onSuccess: function(data) {
+        var response = data.responseText.evalJSON();
+        
+        element.id = "gallery_item_" + response.id;
+        
+        element.setAttribute('data-item_id', response.id);
+        
+        $('gallery_items_list').insert({ 'bottom' : element.removeClassName('asset').addClassName('gallery_item')});
+        gallery.ItemsSort();
+        Event.stopObserving(element, 'click');
+        
+      }.bind(this)
     });
   },
   
-  ItemRemove: function() {
+  ItemRemove: function(element) {
     Droppables.add($('gallery_items_remove'), {
       accept: ['gallery_item'],
       containment: ['gallery_items_list', 'gallery_items_remove'],
-      onHover: function(element) {
+      onHover: function() {
         this.element.addClassName('over');
       },
       onDrop: function(element) {
-        new Ajax.Request('/admin/galleries/items/delete.json?' + new Date().getTime(), { 
-          method: 'get', //TODO this will be a delete
-          parameters: {'id':element.getAttribute('data-id')},
+        new Ajax.Request($('remove_gallery_item_path').value + '.json?' + new Date().getTime(), {
+          method: 'get', // TODO this will be a delete
+          parameters: {'id':element.getAttribute('data-item_id')},
           onSuccess: function(data) {
             this.response = data.responseText.evalJSON();
-
+            
             $('assets_list').insert({'bottom': element});
             element.removeClassName('gallery_item').addClassName('asset');
-            element.setAttribute('data-id', this.response.id);
+            element.setAttribute('data-asset_id', this.response.id);
             element.id = "asset_" + this.response.id;
+            
+            GalleryAsset.SendItem.attach(element);
           }
         });
         this.element.removeClassName('over');
-      }
+      }.bind(element)
     });
   },
   
   ItemsSort: function() {
+
     Sortable.create('gallery_items_list', {
       constraint: false, 
       containment: ['gallery_items_list', 'gallery_items_remove'],
@@ -76,8 +81,8 @@ var Gallery = Class.create({
   },
   
   PositionItems: function() {
-    new Ajax.Request('/admin/galleries/items/reorder.json?' + new Date().getTime(), { 
-      method: 'get', //TODO this will be a put
+    new Ajax.Request($('reorder_gallery_item_path').value + '.json?' + new Date().getTime(), {
+      method: 'get', // TODO this will be a put
       parameters: {'items':Sortable.serialize('gallery_items_list')},
       onSuccess: function(data) {
         //this.response = data.responseText.evalJSON();

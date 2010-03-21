@@ -35,7 +35,7 @@ body
       :float              left
       :width              15%
       :margin             0
-    
+      
       #gallery_create
         :margin
           :bottom       = !line_height
@@ -49,7 +49,7 @@ body
           :background
             :color      = !green
           :color        = !green_light
-    
+      
       .gallery
         :height         = !line_height*2
         :line
@@ -198,7 +198,9 @@ body
     :margin               0 0 0 2%
     
     #assets
-    
+      :margin
+        :bottom           = !line_height*2
+      
       #asset_create
         :height         = !line_height*2
         :line
@@ -236,7 +238,7 @@ body
           :size         = !line_height*0.85
         :padding          0 10px
         :color          = !blue_dark
-        :cursor           move
+        :cursor           pointer
         :overflow         hidden
         
         &:hover, &.current
