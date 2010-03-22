@@ -1,6 +1,7 @@
 class Gallery < ActiveRecord::Base
   
   has_many :items, :order => 'position', :class_name => 'GalleryItem', :foreign_key => :gallery_id, :dependent => :destroy
+  has_many :images, :through => :items
   
   validates_presence_of :title
   validates_presence_of :handle

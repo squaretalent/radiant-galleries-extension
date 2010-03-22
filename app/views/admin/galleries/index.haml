@@ -38,11 +38,9 @@
       %span.title New Item
     
     %ul#assets_list
-      = render :partial => '/admin/galleries/asset', :collection => @assets
-      - if @assets.empty?
-        %li#assets_empty.asset{:'data-asset_id' => nil}
-          %span.title No Items Left
-          %sapn.caption Create an item to get started
+      %li#assets_empty.asset{:'data-asset_id' => nil}
+        %span.title Select a Gallery
+        %sapn.caption Get started by selecting a gallery
     
 #galleries_routes
   = render :partial => '/admin/galleries/routes'

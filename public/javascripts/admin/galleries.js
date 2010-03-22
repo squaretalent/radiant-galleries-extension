@@ -43,14 +43,19 @@ var Gallery = Class.create({
   
   GallerySelect: function(element) {
     gallery.GalleryClear();
+    gallery.AssetsList(element);
+    
     $('gallery_id').value = element.getAttribute('data-id');
     $('gallery_title').value = element.getAttribute('data-title');
     
     $('gallery_items_list').innerHTML = null;
     
+    
     new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), {
       method: 'get',
-      parameters: { 'id' : element.getAttribute('data-id')},
+      parameters: { 
+        'gallery_id' : element.getAttribute('data-id')
+      },
       onSuccess: function(data) {
         $('gallery_items_list').innerHTML = data.responseText;
         gallery.ItemsSort();
@@ -60,13 +65,11 @@ var Gallery = Class.create({
   },
   
   ItemAdd: function(element) {
-    new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), { 
-      method: 'put',
+    new Ajax.Request($('gallery_items_path').value + '/create.json?' + new Date().getTime(), {
+      method: 'post',
       parameters: {
-        'id' : $('gallery_id').value,
-        'item' : {
-          'asset_id' : element.getAttribute('data-asset_id')
-        }
+        'gallery_id' : $('gallery_id').value,
+        'item[asset_id]' : element.getAttribute('data-asset_id')
       },
       onSuccess: function(data) {
         var response = data.responseText.evalJSON();
@@ -91,9 +94,8 @@ var Gallery = Class.create({
         this.element.addClassName('over');
       },
       onDrop: function(element) {
-        new Ajax.Request($('remove_gallery_item_path').value + '?' + new Date().getTime(), {
-          method: 'put',
-          parameters: {'id':element.getAttribute('data-item_id')},
+        new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/delete.json?' + new Date().getTime(), {
+          method: 'delete',
           onSuccess: function(data) {
             this.response = data.responseText.evalJSON();
             
@@ -103,7 +105,7 @@ var Gallery = Class.create({
             element.id = "asset_" + this.response.id;
             
             AssetsList.Events.attach(element);
-          }
+          }.bind(element)
         });
         this.element.removeClassName('over');
       }.bind(element)
@@ -119,7 +121,7 @@ var Gallery = Class.create({
         $('gallery_items_remove').removeClassName('over');
       },
       onUpdate: function(element) {
-        new Ajax.Request('/admin/galleries/' + $('gallery_id').value  + '/reorder?' + new Date().getTime(), {
+        new Ajax.Request($('galleries_path').value + '/' + $('gallery_id').value  + '/reorder.json?' + new Date().getTime(), {
           method: 'put',
           parameters: {
             'id': $('gallery_id').value,
@@ -129,6 +131,19 @@ var Gallery = Class.create({
             //this.response = data.responseText.evalJSON();
           }
         });
+      }
+    });
+  },
+  
+  AssetsList: function(element) {
+    new Ajax.Request($('gallery_assets_path').value + '?' + new Date().getTime(), {
+      method: 'get',
+      parameters: { 
+        'filter[image]' : 1,
+        'gallery_id' : element.getAttribute('data-id')
+      },
+      onSuccess: function(data) {
+        $('assets_list').innerHTML = data.responseText;
       }
     });
   }

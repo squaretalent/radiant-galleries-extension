@@ -8,12 +8,14 @@ class GalleriesExtension < Radiant::Extension
 
   define_routes do |map|
     map.namespace :admin, :member => {:remove => :get} do |admin|
+
+      map.admin_gallery_assets 'admin/gallery/assets.:format', :controller => 'admin/galleries/assets', :action => 'index', :conditions => { :method => :get }
+      map.admin_gallery_items 'admin/gallery/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
+      map.create_admin_gallery_item 'admin/gallery/items/create.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
+      map.delete_admin_gallery_item 'admin/gallery/items/:id/delete.:format', :controller => 'admin/galleries/items', :action => 'delete', :conditions => { :method => :delete }
       
-      admin.namespace :galleries do |items|
-        items.resources :items
-      end
       
-      map.reorder_admin_gallery 'admin/galleries/:id/reorder', :controller => 'admin/galleries', :action => 'reorder', :conditions => {:method => :put}
+      map.reorder_admin_gallery 'admin/galleries/:id/reorder.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
       admin.resources :galleries
     end
     map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'

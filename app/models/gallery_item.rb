@@ -11,7 +11,7 @@ class GalleryItem < ActiveRecord::Base
   validates_uniqueness_of :title
   validates_uniqueness_of :handle
   
-  attr_accessible :title, :handle, :caption, :slug, :image
+  attr_accessible :title, :handle, :caption, :slug, :image, :asset_id
   
   before_validation :set_title_handle_and_caption
   before_validation :filter_handle
