@@ -36,6 +36,7 @@ class Gallery < ActiveRecord::Base
 private
   
   def filter_handle
+    self.handle = self.title if self.handle.nil?
     self.handle = self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
   end
   

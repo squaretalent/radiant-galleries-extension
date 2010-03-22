@@ -1,23 +1,32 @@
-var GalleriesList = {};
-var AssetsList = {};
-var AssetFormClose = {};
+var Galleries = {};
+var Assets = {};
 
 document.observe("dom:loaded", function() {
 
   gallery = new Gallery();
   gallery.GalleryClear();
-  gallery.ItemsDump();
   gallery.ItemsSort();
   
   Event.addBehavior({
-    '#galleries .gallery:(#galleries_empty)' : GalleriesList.Events,
-    '#assets_list .asset:not(#assets_empty)' : AssetsList.Events,
-    '#asset_create-popup_close' : AssetFormClose.Events
+    '#assets_list .asset:not(#assets_empty)' : Assets.List,
+    '#asset_create-popup_close' : Assets.PopupClose,
+    
+    '#galleries .gallery:(#galleries_empty)' : Galleries.List,
+    '#gallery_fields input' : Galleries.Fields,
+    '.delete' : Galleries.ItemDelete
   });
   
 });
 
-GalleriesList.Events = Behavior.create({
+Galleries.Fields = Behavior.create({
+  
+  onblur: function() {
+    gallery.GalleryFieldUpdate(this.element);
+  }
+  
+});
+
+Galleries.List = Behavior.create({
   
   onclick: function() {
     gallery.GallerySelect(this.element);
@@ -25,7 +34,16 @@ GalleriesList.Events = Behavior.create({
   
 });
 
-AssetsList.Events = Behavior.create({
+Galleries.ItemDelete = Behavior.create({
+  
+  onclick: function() {
+    console.log(this.element.up('.gallery_item'));
+    gallery.ItemDelete(this.element.up('.gallery_item'));
+  }
+  
+});
+
+Assets.List = Behavior.create({
   
   onclick: function() { 
     gallery.ItemAdd(this.element);
@@ -33,7 +51,7 @@ AssetsList.Events = Behavior.create({
   
 });
 
-AssetFormClose.Events = Behavior.create({
+Assets.PopupClose = Behavior.create({
   
   onclick: function() { 
     gallery.AssetFormClear();
@@ -54,7 +72,7 @@ var Gallery = Class.create({
     
     $$('.gallery.current').each(function(element) { 
       element.removeClassName('current'); 
-      GalleriesList.Events.attach(element); 
+      Galleries.List.attach(element); 
     });
   },
   
@@ -80,13 +98,33 @@ var Gallery = Class.create({
         onSuccess: function(data) {
           $('gallery_items').show();
           $('gallery_items_alt').hide();
-
           $('gallery_items_list').innerHTML = data.responseText;
+          $('asset_create').show();
           gallery.ItemsSort();
         }
       });
     }
+  },
+  
+  GalleryFieldUpdate: function(element) {
+    var id = $('gallery_id').value;
+    element.addClassName('pending');
     
+    new Ajax.Request($('galleries_path').value + (id != '' ? '/' + $('gallery_id').value : '') + '.json?' + new Date().getTime(), {
+      method: (id == '' ? 'post' : 'put'),
+      parameters: element.serialize(true),
+      onSuccess: function(data) {
+        var response = data.responseText.evalJSON();
+        
+        if(id == '') {
+          
+        }
+        
+        gallery.GallerySelect(element);
+        element.removeClassName('pending');
+        
+      }.bind(element)
+    });
   },
   
   ItemAdd: function(element) {
@@ -111,41 +149,29 @@ var Gallery = Class.create({
     });
   },
   
-  ItemsDump: function(element) {
-    Droppables.add($('gallery_items_remove'), {
-      accept: ['gallery_item'],
-      containment: ['gallery_items_list', 'gallery_items_remove'],
-      onHover: function() {
-        this.element.addClassName('over');
-      },
-      onDrop: function(element) {
-        new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/delete.json?' + new Date().getTime(), {
-          method: 'delete',
-          onSuccess: function(data) {
-            this.response = data.responseText.evalJSON();
-            
-            $('assets_list').insert({'top': element});
-            element.removeClassName('gallery_item').addClassName('asset');
-            element.setAttribute('data-asset_id', this.response.id);
-            element.id = "asset_" + this.response.id;
-            
-            gallery.AssetsLatestBind();
-            
-          }.bind(element)
-        });
-        this.element.removeClassName('over');
+  ItemDelete: function(element) {
+    new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/delete.json?' + new Date().getTime(), {
+      method: 'delete',
+      onSuccess: function(data) {
+        this.response = data.responseText.evalJSON();
+        
+        $('assets_list').insert({'top': element});
+        element.removeClassName('gallery_item').addClassName('asset');
+        element.setAttribute('data-asset_id', this.response.id);
+        element.id = "asset_" + this.response.id;
+        element.show();
+        
+        gallery.AssetsLatestBind();
+        
       }.bind(element)
     });
   },
   
   ItemsSort: function() {
-    
     Sortable.create('gallery_items_list', {
       constraint: false, 
-      containment: ['gallery_items_list', 'gallery_items_remove'],
-      onChange: function(element) {
-        $('gallery_items_remove').removeClassName('over');
-      },
+      overlap: 'horizontal',
+      containment: ['gallery_items_list'],
       onUpdate: function(element) {
         new Ajax.Request($('galleries_path').value + '/' + $('gallery_id').value  + '/reorder.json?' + new Date().getTime(), {
           method: 'put',
@@ -162,7 +188,9 @@ var Gallery = Class.create({
   },
   
   AssetsList: function(element) {
-    $('asset_create').show();
+    $('assets_list').innerHTML = null;
+    $('assets_list').addClassName('pending');
+    
     new Ajax.Request($('gallery_assets_path').value + '?' + new Date().getTime(), {
       method: 'get',
       parameters: { 
@@ -171,6 +199,7 @@ var Gallery = Class.create({
       },
       onSuccess: function(data) {
         $('assets_list').innerHTML = data.responseText;
+        $('assets_list').removeClassName('pending');
       }
     });
   },
@@ -183,7 +212,10 @@ var Gallery = Class.create({
   
   AssetFormClear: function() {
     Element.closePopup('asset_create-popup');
+    $('asset_title').value = null;
+    $('asset_caption').value = null;
     $('asset_asset').value = null;
+
   }
   
 });

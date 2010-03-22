@@ -1,7 +1,15 @@
-#asset_upload-form
-  - form_for :asset, :url => create_admin_gallery_asset_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'ulframe' } do |form|
-    %div.file
-      %label.upload Choose a file to upload
+- form_for :asset, :url => create_admin_gallery_asset_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'ulframe' } do |form|
+  %ol#form_asset
+    %li#field_asset_title
+      = form.label :title, 'Name'
+      = form.text_field :title, :class => 'textbox'
+      %span.note This is optional
+    %li#field_asset_caption
+      = form.label :caption
+      = form.text_field :caption, :class => 'textbox'
+      %span.note This is optional
+    %li#field_asset_asset
+      = form.label :asset, 'Choose File'
       = form.file_field :asset, :class => "", :style => "width: 100%"
 
     .upload-buttons

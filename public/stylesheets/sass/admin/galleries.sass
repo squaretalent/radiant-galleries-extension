@@ -105,6 +105,10 @@ body
           :font
             :size       = !line_height
             
+        .pending
+          :background
+            :color      = !blue
+            
       #gallery_items, #gallery_items_alt
       
         .note
@@ -145,7 +149,6 @@ body
             img
               :max
                 :width    100px
-              :max
                 :height   100px
               :padding    10px
               :position   absolute
@@ -170,36 +173,21 @@ body
                 
             .caption
               :display    none
+              
+            .actions
+              :position   absolute
+              :top        -10px
+              :left       -10px
+              
+              span
+                :display  block
+                :cursor   pointer
                 
             &:hover
               
               img, .title
               :background
                 :color  = !gray
-                
-        #gallery_items_remove
-          :display        block
-          :width          97%
-          :padding        0 1.5%
-          :height       = !line_height*3
-          :line
-            :height     = !line_height*3
-          :text
-            :indent     = !line_height
-          :font
-            :weight       bold
-            :style        italic
-            :size       = !line_height*0.75
-          :background
-            :color      = !red_light
-          :color        = !white
-          :border       = "1px solid #{!gray_dark}"
-            :top          0
-          :cursor         default
-          
-          &.over
-            :background
-              :color    = !red
     
   #assets_content
     :float                left
@@ -269,13 +257,11 @@ body
           .caption
             :color      = !gray
               
-        img 
-
+        img     
           :max
             :width        72px
             :height       72px
           :float          left
-          :height       = !line_height*4
           :margin       = !line_height*0.5
             :left         0
               
@@ -291,6 +277,9 @@ body
           :font
             :size         85%
           :color        = !gray_dark
+          
+        .actions
+          :display        none
           
 #galleries_routes
   :dispaly                none

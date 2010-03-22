@@ -5,7 +5,7 @@ class Admin::Galleries::AssetsController < Admin::ResourceController
       render :partial => 'denied'
     else  
       @gallery = Gallery.find(params[:gallery_id])
-      @assets = Asset.search(nil, params[:filter], nil) - @gallery.images
+      @assets = Asset.search(params[:search], params[:filter]) - @gallery.images
       
       if @assets.nil?
         render :partial => 'empty'
@@ -20,18 +20,25 @@ class Admin::Galleries::AssetsController < Admin::ResourceController
     
     if @asset.save
       @asset = Asset.find(@asset.id)
-      @asset.update_attributes(params[:asset])
-      respond_to do |format|
-        format.js {
-          responds_to_parent do
-            render :update do |page|
-              page.insert_html :top, "assets_list", :partial => 'admin/galleries/assets/asset', :asset => @asset
-              page.call('gallery.AssetsLatestBind');
-              page.call('gallery.AssetFormClear');
+      @asset.update_attributes(params[:asset])      
+      
+      if @asset.asset_content_type.include? "image"
+        respond_to do |format|
+          format.js {
+            responds_to_parent do
+              render :update do |page|
+                page.insert_html :top, "assets_list", :partial => 'admin/galleries/assets/asset', :asset => @asset
+                page.call('gallery.AssetsLatestBind');
+                page.call('gallery.AssetFormClear');
+              end
             end
-          end
-        } 
+          } 
+        end
+      else
+        render :text => "Asset must be an image"
       end
+    else
+      render :text => "Asset could not be created"
     end
     
   end

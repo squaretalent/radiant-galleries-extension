@@ -1,4 +1,6 @@
 %li.gallery_item{:id => "gallery_item_#{item.id}", :'data-item_id' => item.id, :'data-asset_it' => item.image.id}
   %img{:src => item.image.thumbnail(:thumbnail), :alt => 'no image'}
-  %span.title= item.title
+  %span.title= truncate item.title, 30, '...'
   %span.caption= item.caption
+  .actions
+    %span.delete delete

@@ -22,7 +22,7 @@ class Admin::Galleries::ItemsController < Admin::ResourceController
         format.json { render :json => @item.to_json(attr_hash) }
       end
     else
-      render :text => 'failure'
+      render :text => @item.inspect
     end
 
   end
