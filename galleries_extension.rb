@@ -10,6 +10,8 @@ class GalleriesExtension < Radiant::Extension
     map.namespace :admin, :member => {:remove => :get} do |admin|
 
       map.admin_gallery_assets 'admin/gallery/assets.:format', :controller => 'admin/galleries/assets', :action => 'index', :conditions => { :method => :get }
+      map.create_admin_gallery_asset 'admin/gallery/assets/create.:format', :controller => 'admin/galleries/assets', :action => 'create', :conditions => { :method => :post }
+      
       map.admin_gallery_items 'admin/gallery/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
       map.create_admin_gallery_item 'admin/gallery/items/create.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
       map.delete_admin_gallery_item 'admin/gallery/items/:id/delete.:format', :controller => 'admin/galleries/items', :action => 'delete', :conditions => { :method => :delete }

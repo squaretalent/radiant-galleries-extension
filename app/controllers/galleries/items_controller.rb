@@ -5,7 +5,7 @@ class Galleries::ItemsController < ApplicationController
   def show
     @gallery = Gallery.find(:first, :conditions => ['LOWER(handle) = ?', params[:gallery_handle]])
     @gallery_item = @gallery.items.find(:first, :conditions => ['LOWER(handle) = ?', params[:handle]])
-    @title = @gallery_item.title
+    @title = "Viewing Item"
     
     @radiant_layout = @gallery_item.layout
   end

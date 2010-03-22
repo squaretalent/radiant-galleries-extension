@@ -7,7 +7,7 @@
   %p Galleries let you organise items you want your visitors to see
 
   #galleries
-    #gallery_create.gallery{:'data-id' => nil, :'data-title' => ''}
+    #gallery_create.gallery{:'data-id' => '', :'data-title' => ''}
       %span.title New Gallery
     %ul#galleries_list
       = render :partial => '/admin/galleries/gallery', :collection => @galleries
@@ -16,31 +16,24 @@
           %span.title Nothing Yet
     
   #gallery
-    #gallery_fields
-      = render :partial => 'fields'
-    #gallery_items
-      %span.note you can drag these items around to reorder them
-      %ul#gallery_items_list
-        %li#gallery_items_list_empty.gallery_item{:'data-item_id' => nil}
-          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Drag Items Over
-      #gallery_items_remove
-        %span.title you can drop an item here to remove it
+    = render 'form'
       
 #assets_content
   
   %h2 Items
-  %p Click on an item to add it to the gallery
+  %p Clicking on an item adds it to the gallery
   
   #assets
     
     #asset_create.asset
-      %span.title New Item
+      %span.title
+        %a.popup{:href => '#asset_create-popup'} New Item
     
     %ul#assets_list
-      %li#assets_empty.asset{:'data-asset_id' => nil}
-        %span.title Select a Gallery
-        %sapn.caption Get started by selecting a gallery
+      = render :partial => 'admin/galleries/assets/denied'
+      
+    #asset_create-popup{ :style => 'display:none' }
+      = render :partial => 'admin/galleries/assets/form'
     
 #galleries_routes
   = render :partial => '/admin/galleries/routes'

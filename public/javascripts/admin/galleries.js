@@ -1,6 +1,6 @@
 var GalleriesList = {};
 var AssetsList = {};
-
+var AssetFormClose = {};
 
 document.observe("dom:loaded", function() {
 
@@ -11,7 +11,8 @@ document.observe("dom:loaded", function() {
   
   Event.addBehavior({
     '#galleries .gallery:(#galleries_empty)' : GalleriesList.Events,
-    '#assets_list .asset:not(#assets_empty)' : AssetsList.Events
+    '#assets_list .asset:not(#assets_empty)' : AssetsList.Events,
+    '#asset_create-popup_close' : AssetFormClose.Events
   });
   
 });
@@ -32,35 +33,59 @@ AssetsList.Events = Behavior.create({
   
 });
 
-
+AssetFormClose.Events = Behavior.create({
+  
+  onclick: function() { 
+    gallery.AssetFormClear();
+  }
+  
+});
 
 var Gallery = Class.create({
   
   GalleryClear: function() {
     $('gallery_id').value = null;
     $('gallery_title').value = null;
+    $('gallery_items').hide();
+    $('gallery_items_alt').show();
+    
+    $('asset_create').hide();
+    $('asset_asset').value = null;
+    
+    $$('.gallery.current').each(function(element) { 
+      element.removeClassName('current'); 
+      GalleriesList.Events.attach(element); 
+    });
   },
   
   GallerySelect: function(element) {
     gallery.GalleryClear();
     gallery.AssetsList(element);
+    element.addClassName('current');
+    element.stopObserving('click');
     
-    $('gallery_id').value = element.getAttribute('data-id');
-    $('gallery_title').value = element.getAttribute('data-title');
-    
-    $('gallery_items_list').innerHTML = null;
-    
-    
-    new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), {
-      method: 'get',
-      parameters: { 
-        'gallery_id' : element.getAttribute('data-id')
-      },
-      onSuccess: function(data) {
-        $('gallery_items_list').innerHTML = data.responseText;
-        gallery.ItemsSort();
-      }
-    });
+    if(element.getAttribute('data-id') == '') {
+      // New Gallery
+    } else {      
+      $('gallery_id').value = element.getAttribute('data-id');
+      $('gallery_title').value = element.getAttribute('data-title');
+
+      $('gallery_items_list').innerHTML = null;
+
+      new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), {
+        method: 'get',
+        parameters: { 
+          'gallery_id' : element.getAttribute('data-id')
+        },
+        onSuccess: function(data) {
+          $('gallery_items').show();
+          $('gallery_items_alt').hide();
+
+          $('gallery_items_list').innerHTML = data.responseText;
+          gallery.ItemsSort();
+        }
+      });
+    }
     
   },
   
@@ -99,12 +124,13 @@ var Gallery = Class.create({
           onSuccess: function(data) {
             this.response = data.responseText.evalJSON();
             
-            $('assets_list').insert({'bottom': element});
+            $('assets_list').insert({'top': element});
             element.removeClassName('gallery_item').addClassName('asset');
             element.setAttribute('data-asset_id', this.response.id);
             element.id = "asset_" + this.response.id;
             
-            AssetsList.Events.attach(element);
+            gallery.AssetsLatestBind();
+            
           }.bind(element)
         });
         this.element.removeClassName('over');
@@ -136,6 +162,7 @@ var Gallery = Class.create({
   },
   
   AssetsList: function(element) {
+    $('asset_create').show();
     new Ajax.Request($('gallery_assets_path').value + '?' + new Date().getTime(), {
       method: 'get',
       parameters: { 
@@ -146,6 +173,17 @@ var Gallery = Class.create({
         $('assets_list').innerHTML = data.responseText;
       }
     });
+  },
+  
+  AssetsLatestBind: function() {
+    AssetsList.Events.attach($("assets_list").down(".asset"));
+    
+    return null;
+  },
+  
+  AssetFormClear: function() {
+    Element.closePopup('asset_create-popup');
+    $('asset_asset').value = null;
   }
   
 });

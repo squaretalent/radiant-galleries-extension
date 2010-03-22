@@ -35,7 +35,7 @@ module GalleryTags
   end
     
   tag 'gallery:slug' do |tag|
-    tag.locals.gallery.slug unless tag.locals.item.nil?
+    tag.locals.gallery.slug unless tag.locals.nil?
   end
   
   tag 'gallery:if_items' do |tag|
