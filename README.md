@@ -43,5 +43,4 @@ Galleries with Items, items have an Image which is just an asset from paperclipp
 == Todo
 
 * tests (-:
-* create gallery / item interface
-* validate handle uniqueness within scope of gallery
+* bit more fanciness on interface

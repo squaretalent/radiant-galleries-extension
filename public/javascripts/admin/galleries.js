@@ -37,7 +37,6 @@ Galleries.List = Behavior.create({
 Galleries.ItemDelete = Behavior.create({
   
   onclick: function() {
-    console.log(this.element.up('.gallery_item'));
     gallery.ItemDelete(this.element.up('.gallery_item'));
   }
   
