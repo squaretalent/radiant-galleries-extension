@@ -10,12 +10,10 @@ class Gallery < ActiveRecord::Base
   
   attr_accessible :title, :handle, :caption, :slug
   
-  def slug
-    "/gallery/#{self.slug_handle}"
-  end
+  before_validation :filter_handle
   
-  def slug_handle
-    self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
+  def slug
+    "/gallery/#{self.handle}"
   end
   
   def layout
@@ -32,6 +30,12 @@ class Gallery < ActiveRecord::Base
     else
       Radiant::Config['galleries.item_layout'] || 'GalleryItem'
     end
+  end
+  
+private
+  
+  def filter_handle
+    self.handle = self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
   end
   
 end

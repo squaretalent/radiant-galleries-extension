@@ -9,14 +9,14 @@
   %p Galleries let you organise items you want your visitors to see
 
   #galleries
-    #gallery_create.gallery
+    #gallery_create.gallery{:'data-id' => nil, :'data-title' => ''}
       %span.title New Gallery
     %ul#galleries_list
-      %li.gallery{:'data-id' => 1}
+      %li.gallery{:'data-id' => 1, :'data-title' => 'Guys'}
         %span.title Guys
-      %li.gallery{:'data-id' => 2}
+      %li.gallery{:'data-id' => 2, :'data-title' => 'Gals'}
         %span.title Gals
-      %li.gallery{:'data-id' => 3}
+      %li.gallery{:'data-id' => 3, :'data-title' => 'Kids'}
         %span.title Kids
       %li#galleries_empty.gallery
         %span.title Nothing Yet
@@ -29,22 +29,7 @@
         -#%li#gallery_items_list_empty.gallery_item{:'data-item_id' => nil}
           %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
           %span.title Drag Items Over
-        %li#gallery_item_1.gallery_item{:'data-item_id' => 1, :'data-asset_it' => 2}
-          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Item 1
-          %span.caption An Items caption is kept here in the caption area
-        %li#gallery_item_2.gallery_item{:'data-item_id' => 2, :'data-asset_it' => 3}
-          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Item 2
-          %span.caption An Items caption is kept here in the caption area
-        %li#gallery_item_3.gallery_item{:'data-item_id' => 3, :'data-asset_it' => 4}
-          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Item 3
-          %span.caption An Items caption is kept here in the caption area
-        %li#gallery_item_4.gallery_item{:'data-item_id' => 4, :'data-asset_it' => 5}
-          %img{:src => '/images/admin/placeholder.png', :alt => 'placeholder image'}
-          %span.title Item 4
-          %span.caption An Items caption is kept here in the caption area
+        = render :partial => '/admin/galleries/items/items'
       #gallery_items_remove
         %span.title you can drop an item here to remove it
 
@@ -68,6 +53,7 @@
         %sapn.caption Create an item to get started
         
 #galleries_routes{:style => 'display: none'}
+  %input{:id=>'gallery_items_path', :value => '/admin/galleries/items.haml', :type => 'hidden'}
   %input{:id=>'create_gallery_item_path', :value => '/admin/galleries/items/create', :type => 'hidden'}
   %input{:id=>'remove_gallery_item_path', :value => '/admin/galleries/items/delete', :type => 'hidden'} 
   %input{:id=>'reorder_gallery_item_path', :value => '/admin/galleries/items/reorder', :type => 'hidden'} 

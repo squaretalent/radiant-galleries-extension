@@ -1,0 +1,4 @@
+%li.gallery_item{:id => "gallery_item_#{item.id}", :'data-item_id' => item.id, :'data-asset_it' => item.image.id}
+  %img{:src => item.image(:thumbnail), :alt => item.title}
+  %span.title= item.title
+  %span.caption= item.caption

@@ -13,16 +13,27 @@ class GalleryItem < ActiveRecord::Base
   
   attr_accessible :title, :handle, :caption, :slug, :image
   
-  def slug
-    "/gallery/#{self.gallery.slug_handle}/#{self.slug_handle}"
-  end
+  before_validation :set_title_handle_and_caption
+  before_validation :filter_handle
   
-  def slug_handle
-    handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
+  def slug
+    "/gallery/#{self.gallery.handle}/#{self.handle}"
   end
   
   def layout
     gallery.item_layout
+  end
+  
+private
+  
+  def set_title_handle_and_caption
+    self.title = self.image.title if self.title.nil?
+    self.handle = self.title if self.handle.nil?
+    self.caption = self.image.caption if self.caption.nil?
+  end
+  
+  def filter_handle
+    self.handle = self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
   end
   
 end

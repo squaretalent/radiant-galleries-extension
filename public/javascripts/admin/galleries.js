@@ -1,8 +1,11 @@
 var GalleriesList = {};
 var AssetsList = {};
 
+
 document.observe("dom:loaded", function() {
+
   gallery = new Gallery();
+  gallery.GalleryClear();
   gallery.ItemsDump();
   gallery.ItemsSort();
   
@@ -10,6 +13,7 @@ document.observe("dom:loaded", function() {
     '#galleries .gallery:(#galleries_empty)' : GalleriesList.Events,
     '#assets_list .asset:not(#assets_empty)' : AssetsList.Events
   });
+  
 });
 
 GalleriesList.Events = Behavior.create({
@@ -28,9 +32,17 @@ AssetsList.Events = Behavior.create({
   
 });
 
+
+
 var Gallery = Class.create({
   
+  GalleryClear: function() {
+    $('gallery_id').value = null;
+    $('gallery_title').value = null;
+  },
+  
   GallerySelect: function(element) {
+    gallery.GalleryClear();
     $('gallery_id').value = element.getAttribute('data-id');
     $('gallery_title').value = element.getAttribute('data-title');
     
@@ -41,40 +53,21 @@ var Gallery = Class.create({
       parameters: { 'id' : element.getAttribute('data-id')},
       onSuccess: function(data) {
         $('gallery_items_list').innerHTML = data.responseText;
-
-        // response.each(function(item) {
-        //   var element = document.createElement('li');
-        //   var element_image = document.createElement('img');
-        //   var element_span = document.createElement('span');
-        //   
-        //   element.id = 'gallery_item_id' + item.id;
-        //   element.setAttribute('data-item_id', item.id);
-        //   element.addClassName('gallery_item');
-        //   
-        //   element_image.setAttribute('src', item.title);
-        //   
-        //   element_span.addClassName('title');
-        //   element_span.innerHTML = item.title;
-        //   
-        //   element.insert({
-        //     'bottom' : element_image,
-        //     'bottom' : element_span
-        //   });
-        //   
-        //   $('gallery_items_list').insert({ 
-        //     'bottom' : element
-        //   });
-        // })
+        gallery.ItemsSort();
       }
     });
     
-    gallery.ItemsSort();
   },
   
   ItemAdd: function(element) {
-    new Ajax.Request($('create_gallery_item_path').value + '.json?' + new Date().getTime(), { 
-      method: 'get', //TODO this will be a put
-      parameters: {'id' : element.getAttribute('data-asset_id')},
+    new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), { 
+      method: 'put',
+      parameters: {
+        'id' : $('gallery_id').value,
+        'item' : {
+          'asset_id' : element.getAttribute('data-asset_id')
+        }
+      },
       onSuccess: function(data) {
         var response = data.responseText.evalJSON();
         
@@ -98,8 +91,8 @@ var Gallery = Class.create({
         this.element.addClassName('over');
       },
       onDrop: function(element) {
-        new Ajax.Request($('remove_gallery_item_path').value + '.json?' + new Date().getTime(), {
-          method: 'get', // TODO this will be a delete
+        new Ajax.Request($('remove_gallery_item_path').value + '?' + new Date().getTime(), {
+          method: 'put',
           parameters: {'id':element.getAttribute('data-item_id')},
           onSuccess: function(data) {
             this.response = data.responseText.evalJSON();
@@ -126,12 +119,14 @@ var Gallery = Class.create({
         $('gallery_items_remove').removeClassName('over');
       },
       onUpdate: function(element) {
-        new Ajax.Request($('reorder_gallery_item_path').value + '.json?' + new Date().getTime(), {
-          method: 'get', // TODO this will be a put
-          parameters: {'items':Sortable.serialize('gallery_items_list')},
+        new Ajax.Request('/admin/galleries/' + $('gallery_id').value  + '/reorder?' + new Date().getTime(), {
+          method: 'put',
+          parameters: {
+            'id': $('gallery_id').value,
+            'items':Sortable.serialize('gallery_items_list')
+          },
           onSuccess: function(data) {
             //this.response = data.responseText.evalJSON();
-            $('gallery_items_remove').removeClassName('over');
           }
         });
       }
