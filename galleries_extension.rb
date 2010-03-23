@@ -2,7 +2,7 @@
 # require_dependency 'application_controller'
 
 class GalleriesExtension < Radiant::Extension
-  version "1.0"
+  version "1.0.1"
   description "Photo Galleries using the paperclipped extension for assets"
   url "http://github.com/squaretalent/radiant-galleries-extension"
 
