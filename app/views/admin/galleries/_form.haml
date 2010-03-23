@@ -1,5 +1,6 @@
 #gallery_fields
-  = render :partial => 'fields'
+  - form_for :gallery, :url => admin_galleries_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'gallery_frame', :id => 'gallery_form' } do |form|
+    = render :partial => 'fields'
 #gallery_items
   %span.note you can drag these items around to reorder them
   %ul#gallery_items_list
@@ -8,3 +9,5 @@
       %span.title Drag Items Over
 #gallery_items_alt
   %span.note Once you have created the gallery you can start adding items
+  
+%iframe#gallery_form{ :name => 'gallery_frame', :src => "about:blank" }

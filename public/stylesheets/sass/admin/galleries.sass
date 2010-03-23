@@ -26,16 +26,16 @@ body
 
   #galleries_content
     :float                left
-    :width                63%
+    :width                65%
     :min
       :width              610px
     :margin
-      :right              2%
+      :right              1%
       :bottom           = !line_height*2
     
     #galleries
       :float              left
-      :width              15%
+      :width              19%
       :margin             0
       
       #gallery_create
@@ -58,10 +58,17 @@ body
           :height       = !line_height*2
         :font
           :size         = !line_height*0.85
-        :padding          0 10px
+        :padding          0 30px 0 10px
         :color          = !blue_dark
         :cursor           pointer
         :overflow         hidden
+        :white
+          :space          nowrap
+          
+        .title
+          :display        block
+          :width          100%
+          :overflow       hidden
         
         &:hover, &.current
           :background
@@ -81,16 +88,18 @@ body
     
     #gallery
       :float              left
-      :width              77%
+      :width              75%
       :min
-        :width            480px
+        :width            485px
       :padding            10px
-      :margin             0 0 0 3%
+      :margin             0 0 0 2%
       :background
         :color          = !gray
       :outline            2px solid #000
       
       #gallery_fields
+        :overflow         hidden
+        :width            100%
         :padding
           :bottom       = !line_height*0.5
         :margin 
@@ -99,15 +108,21 @@ body
           :bottom       = "1px solid #{black}"
       
         #gallery_title
-          :width          98.75%
+          :width          85%
+          :float          left
           :padding        0 0.5%
           :height       = !line_height*1.5
           :font
             :size       = !line_height
             
-        .pending
-          :background
-            :color      = !blue
+          &.pending
+            :background
+              :color    = !blue
+              
+        #gallery_submit
+          :float          right
+          :margin
+            :top          7px
             
       #gallery_items, #gallery_items_alt
       
@@ -146,7 +161,7 @@ body
             :margin       1%
             :cursor       move
             
-            img
+            .image
               :max
                 :width    100px
                 :height   100px
@@ -176,12 +191,27 @@ body
               
             .actions
               :position   absolute
-              :top        -10px
-              :left       -10px
+              :display    block
+              :width      100%
+              :top        0
+              :left       0
               
-              span
+              .delete
+                :position absolute
+                :right    0
+                :width    20px
+                :height   20px
+                :overflow hidden
                 :display  block
                 :cursor   pointer
+                :background
+                  :image  url('/images/admin/remove_disabled.png')
+                  :repeat no-repeat
+                  :position 0 0
+                  
+                &:hover
+                  :background
+                    :image  url('/images/admin/remove.png')
                 
             &:hover
               
@@ -192,7 +222,7 @@ body
   #assets_content
     :float                left
     :width                33%
-    :margin               0 0 0 2%
+    :margin               0 0 0 1%
     
     #assets
       :margin
@@ -257,7 +287,7 @@ body
           .caption
             :color      = !gray
               
-        img     
+        .image
           :max
             :width        72px
             :height       72px

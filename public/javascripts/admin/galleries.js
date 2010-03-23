@@ -12,17 +12,8 @@ document.observe("dom:loaded", function() {
     '#asset_create-popup_close' : Assets.PopupClose,
     
     '#galleries .gallery:(#galleries_empty)' : Galleries.List,
-    '#gallery_fields input' : Galleries.Fields,
     '.delete' : Galleries.ItemDelete
   });
-  
-});
-
-Galleries.Fields = Behavior.create({
-  
-  onblur: function() {
-    gallery.GalleryFieldUpdate(this.element);
-  }
   
 });
 
@@ -64,7 +55,6 @@ var Gallery = Class.create({
     $('gallery_id').value = null;
     $('gallery_title').value = null;
     $('gallery_items').hide();
-    $('gallery_items_alt').show();
     
     $('asset_create').hide();
     $('asset_asset').value = null;
@@ -82,48 +72,55 @@ var Gallery = Class.create({
     element.stopObserving('click');
     
     if(element.getAttribute('data-id') == '') {
-      // New Gallery
-    } else {      
-      $('gallery_id').value = element.getAttribute('data-id');
-      $('gallery_title').value = element.getAttribute('data-title');
-
+      $('gallery_items_alt').show();
+      
+      $('gallery_form').setAttribute('action', $('galleries_path').value + '.js');
+      $('gallery_submit').value = 'Create';
+      $('gallery_method').value = 'post';
+    } else {
+      $('gallery_form').setAttribute('action', $('galleries_path').value + '/' + element.getAttribute('data-id') + '.js');
+      $('gallery_method').value = 'put';
+      $('gallery_id').value     = element.getAttribute('data-id');
+      $('gallery_title').value  = element.getAttribute('data-title');
+      $('gallery_submit').value = 'Update';
+      
+      $('gallery_items_alt').hide();
       $('gallery_items_list').innerHTML = null;
-
+      $('gallery_items').show().addClassName('pending');
+      
+      $('assets').addClassName('pending');
+      $('asset_create').show();
+      
       new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), {
         method: 'get',
         parameters: { 
           'gallery_id' : element.getAttribute('data-id')
         },
         onSuccess: function(data) {
-          $('gallery_items').show();
-          $('gallery_items_alt').hide();
           $('gallery_items_list').innerHTML = data.responseText;
-          $('asset_create').show();
           gallery.ItemsSort();
+          
+          $('gallery_items').removeClassName('pending');
+          $('assets').removeClassName('pending');
         }
       });
     }
   },
   
-  GalleryFieldUpdate: function(element) {
-    var id = $('gallery_id').value;
-    element.addClassName('pending');
+  GalleriesLatestBind: function() {
+    var element = $('galleries_list').select(".gallery:last-child")[0];
+
+    Galleries.List.attach(element);
+    gallery.GallerySelect(element);
     
-    new Ajax.Request($('galleries_path').value + (id != '' ? '/' + $('gallery_id').value : '') + '.json?' + new Date().getTime(), {
-      method: (id == '' ? 'post' : 'put'),
-      parameters: element.serialize(true),
-      onSuccess: function(data) {
-        var response = data.responseText.evalJSON();
-        
-        if(id == '') {
-          
-        }
-        
-        gallery.GallerySelect(element);
-        element.removeClassName('pending');
-        
-      }.bind(element)
-    });
+    return null;
+  },
+  
+  GalleriesUpdate: function() {
+    var element = $('galleries_list').down('.current');
+
+    element.setAttribute('data-title', $('gallery_title').value);
+    element.down('.title').innerHTML = $('gallery_title').value;
   },
   
   ItemAdd: function(element) {
@@ -149,6 +146,7 @@ var Gallery = Class.create({
   },
   
   ItemDelete: function(element) {
+    element.hide();
     new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/delete.json?' + new Date().getTime(), {
       method: 'delete',
       onSuccess: function(data) {
@@ -204,7 +202,7 @@ var Gallery = Class.create({
   },
   
   AssetsLatestBind: function() {
-    AssetsList.Events.attach($("assets_list").down(".asset"));
+    Assets.List.attach($("assets_list").down(".asset"));
     
     return null;
   },

@@ -1,4 +1,4 @@
-- form_for :asset, :url => create_admin_gallery_asset_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'ulframe' } do |form|
+- form_for :asset, :url => create_admin_gallery_asset_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'frame_asset' } do |form|
   %ol#form_asset
     %li#field_asset_title
       = form.label :title, 'Name'
@@ -16,6 +16,6 @@
       = form.submit "Save and Upload", :class => "button"
       %div.spinner
         
-  %iframe{ :id => 'ulframe', :name => "ulframe", :src => "about:blank", :style => "margin-left: 20px"}
+  %iframe#frame_asset{ :src => "about:blank" }
 
 %a#asset_create-popup_close{ :href => '#'} Close
