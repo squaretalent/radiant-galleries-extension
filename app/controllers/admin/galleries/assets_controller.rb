@@ -29,7 +29,6 @@ class Admin::Galleries::AssetsController < Admin::ResourceController
               render :update do |page|
                 page.insert_html :top, "assets_list", :partial => 'admin/galleries/assets/asset', :asset => @asset
                 page.call('gallery.AssetsLatestBind');
-                page.call('gallery.AssetFormClear');
               end
             end
           } 
