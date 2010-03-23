@@ -1,6 +1,6 @@
 %li.asset{:id => "asset_#{asset.id}", :'data-item_id' => nil, :'data-asset_id' => asset.id}
   %img.image{:src => asset.thumbnail(:thumbnail), :alt => 'no image'}
-  %span.title= truncate asset.title, 30, '...'
+  %span.title= truncate asset.title, 35, '...'
   %span.caption= asset.caption
   .actions
     %span.delete

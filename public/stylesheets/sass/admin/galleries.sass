@@ -258,10 +258,12 @@ body
         :bottom           = !line_height*2
       
       #asset_create
+        :width            100%
+        :float            none
         :height         = !line_height*2
         :line
           :height       = !line_height*2
-        :margin           
+        :margin           0
           :bottom       = !line_height
         :padding          0
         :background
@@ -276,6 +278,14 @@ body
             :color      = !green
           :color        = !green_light
           
+        .title
+          :position       relative
+          :top            0
+          :padding        0
+          :font
+            :size         15px
+          :line
+            :height     = !line_height*2
           
         a
           :display        block
@@ -287,6 +297,8 @@ body
             :decoration   none
           
       #assets_empty
+        :width            100%
+        :float            none
         :color          = !gray_dark
         :cursor           default
         
@@ -296,14 +308,30 @@ body
             
           .caption
             :color      = !gray_dark !important
-    
+            
+        .title
+          :position       relative
+          :top            0
+          :padding        0
+          :font
+            :size         15px
+          :line
+            :height     = !line_height*2
+            
+      #assets_list
+        :overflow         hidden
+      
       .asset
-        :height         = !line_height*5
+        :position         relative
+        :width            29%
+        :float            left
+        :height         = !line_height*7
         :line
           :height       = !line_height*2
         :font
           :size         = !line_height*0.85
-        :padding          0 10px
+        :padding          0 1%
+        :margin           1%
         :color          = !blue_dark
         :cursor           pointer
         :overflow         hidden
@@ -317,17 +345,25 @@ body
             :color      = !gray
               
         .image
+          :position       absolute
+          :left           50%
           :max
             :width        72px
             :height       72px
-          :float          left
           :margin       = !line_height*0.5
-            :left         0
+            :left       = -72px/2
+            :right        0
               
         .title
           :display        block
+          :position       absolute
+          :padding        5px
+          :top          = !line_height*4.5
+          :line
+            :height     = !line_height
           :font
             :weight       bold
+            :size         12px
             
         .caption
           :display        block
