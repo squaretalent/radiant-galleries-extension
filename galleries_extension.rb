@@ -14,7 +14,7 @@ class GalleriesExtension < Radiant::Extension
       
       map.admin_gallery_items 'admin/gallery/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
       map.create_admin_gallery_item 'admin/gallery/items/create.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
-      map.delete_admin_gallery_item 'admin/gallery/items/:id/delete.:format', :controller => 'admin/galleries/items', :action => 'delete', :conditions => { :method => :delete }
+      map.delete_admin_gallery_item 'admin/gallery/items/:id/remove.:format', :controller => 'admin/galleries/items', :action => 'remove', :conditions => { :method => :get }
       
       
       map.reorder_admin_gallery 'admin/galleries/:id/reorder.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }

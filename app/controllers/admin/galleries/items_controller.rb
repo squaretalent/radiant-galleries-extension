@@ -27,7 +27,7 @@ class Admin::Galleries::ItemsController < Admin::ResourceController
 
   end
   
-  def delete
+  def remove
     @item = GalleryItem.find(params[:id])
     @asset = @item.image
     

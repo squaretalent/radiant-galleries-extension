@@ -53,6 +53,7 @@ body
           :color        = !green_light
       
       .gallery
+        :position         relative
         :height         = !line_height*2
         :line
           :height       = !line_height*2
@@ -69,6 +70,31 @@ body
           :display        block
           :width          100%
           :overflow       hidden
+          
+        .actions
+          :position       absolute
+          :display        block
+          :width          100%
+          :top            0
+          :left           0
+          
+          .delete
+            :position     absolute
+            :right        5px
+            :top          8px
+            :width        20px
+            :height       20px
+            :overflow     hidden
+            :display      block
+            :cursor       pointer
+            :background
+              :image      url('/images/admin/remove_disabled.png')
+              :repeat     no-repeat
+              :position   0 0
+              
+            &:hover
+              :background
+                :image    url('/images/admin/remove.png')
         
         &:hover, &.current
           :background
@@ -123,6 +149,9 @@ body
           :float          right
           :margin
             :top          7px
+            
+      #gallery_form
+        :height         = !line_height
             
       #gallery_items, #gallery_items_alt
       
@@ -312,4 +341,4 @@ body
           :display        none
           
 #galleries_routes
-  :dispaly                none
+  :display                none

@@ -5,14 +5,16 @@ document.observe("dom:loaded", function() {
 
   gallery = new Gallery();
   gallery.GalleryClear();
+  gallery.GallerySelect($('gallery_create'));
   gallery.ItemsSort();
   
   Event.addBehavior({
     '#assets_list .asset:not(#assets_empty)' : Assets.List,
     '#asset_create-popup_close' : Assets.PopupClose,
     
-    '#galleries .gallery:(#galleries_empty)' : Galleries.List,
-    '.delete' : Galleries.ItemDelete
+    '#galleries .gallery:not(#galleries_empty)' : Galleries.List,
+    '#galleries .gallery:not(#galleries_empty) .delete' : Galleries.Delete,
+    '#gallery_items_list .gallery_item .delete' : Galleries.ItemDelete
   });
   
 });
@@ -20,7 +22,20 @@ document.observe("dom:loaded", function() {
 Galleries.List = Behavior.create({
   
   onclick: function() {
+    gallery.GalleryClear();
     gallery.GallerySelect(this.element);
+  }
+  
+});
+
+Galleries.Delete = Behavior.create({
+  
+  onclick: function() {
+    if(confirm("Really Delete Category?")) {
+      gallery.GalleryDelete(this.element.up('.gallery'));
+    }
+    
+    return false;  
   }
   
 });
@@ -66,7 +81,6 @@ var Gallery = Class.create({
   },
   
   GallerySelect: function(element) {
-    gallery.GalleryClear();
     gallery.AssetsList(element);
     element.addClassName('current');
     element.stopObserving('click');
@@ -105,6 +119,21 @@ var Gallery = Class.create({
         }
       });
     }
+  },
+  
+  GalleryDelete: function(element) {
+    gallery.GalleryClear();
+    element.hide();
+    new Ajax.Request($('galleries_path').value + '/' + element.getAttribute('data-id') + '/remove.js?' + new Date().getTime(), {
+      method: 'get',
+      onSuccess: function(data) {
+        element.remove();
+      }.bind(element),
+      onFailure: function(data) {
+        element.show();        
+        gallery.GallerySelect(element);
+      }
+    });
   },
   
   GalleriesLatestBind: function() {
@@ -147,8 +176,8 @@ var Gallery = Class.create({
   
   ItemDelete: function(element) {
     element.hide();
-    new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/delete.json?' + new Date().getTime(), {
-      method: 'delete',
+    new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/remove.json?' + new Date().getTime(), {
+      method: 'get',
       onSuccess: function(data) {
         this.response = data.responseText.evalJSON();
         

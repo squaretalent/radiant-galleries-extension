@@ -57,5 +57,15 @@ class Admin::GalleriesController < Admin::ResourceController
     render :text => @content.inspect
     
   end
+  
+  def remove
+    @gallery = Gallery.find(params[:id])
+    
+    if @gallery.destroy
+      render :text => 'success'
+    else
+      render :text => 'failure'
+    end
+  end
 
 end
