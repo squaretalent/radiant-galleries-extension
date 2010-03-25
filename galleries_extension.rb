@@ -9,15 +9,15 @@ class GalleriesExtension < Radiant::Extension
   define_routes do |map|
     map.namespace :admin, :member => {:remove => :get} do |admin|
 
-      map.admin_gallery_assets 'admin/gallery/assets.:format', :controller => 'admin/galleries/assets', :action => 'index', :conditions => { :method => :get }
-      map.create_admin_gallery_asset 'admin/gallery/assets/create.:format', :controller => 'admin/galleries/assets', :action => 'create', :conditions => { :method => :post }
+      map.admin_gallery_assets 'admin/galleries/assets.:format', :controller => 'admin/galleries/assets', :action => 'index', :conditions => { :method => :get }
+      map.create_admin_gallery_asset 'admin/galleries/assets/create.:format', :controller => 'admin/galleries/assets', :action => 'create', :conditions => { :method => :post }
       
-      map.admin_gallery_items 'admin/gallery/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
-      map.create_admin_gallery_item 'admin/gallery/items/create.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
-      map.delete_admin_gallery_item 'admin/gallery/items/:id/remove.:format', :controller => 'admin/galleries/items', :action => 'remove', :conditions => { :method => :get }
+      map.admin_gallery_item 'admin/galleries/items/:id.:format', :controller => 'admin/galleries/items', :action => 'show', :conditions => { :method => :get }
+      map.delete_admin_gallery_item 'admin/galleries/items/:id.:format', :controller => 'admin/galleries/items', :action => 'destroy', :conditions => { :method => :delete }
+      map.create_admin_gallery_item 'admin/galleries/:id/items.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
+      map.admin_gallery_items 'admin/galleries/:id/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
       
-      
-      map.reorder_admin_gallery 'admin/galleries/:id/reorder.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
+      map.reorder_admin_gallery 'admin/galleries/reorder/:id.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
       admin.resources :galleries
     end
     map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'

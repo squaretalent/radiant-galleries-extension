@@ -7,13 +7,14 @@ document.observe("dom:loaded", function() {
   gallery.GalleryClear(); // Remove any stray data
   gallery.GallerySelect($('gallery_create')); // By default create gallery
   
-  Event.addBehavior({
+  Event.addBehavior({    
+    '#galleries .gallery:not(#galleries_empty)' : Galleries.List,
+    '#galleries .gallery:not(#galleries_empty) .delete' : Galleries.Destroy,
+    '#gallery_items_list .gallery_item .delete' : Galleries.ItemDelete,
+    
     '#assets_list .asset:not(#assets_empty)' : Assets.List,
     '#asset_create-popup_close' : Assets.PopupClose,
-    
-    '#galleries .gallery:not(#galleries_empty)' : Galleries.List,
-    '#galleries .gallery:not(#galleries_empty) .delete' : Galleries.Delete,
-    '#gallery_items_list .gallery_item .delete' : Galleries.ItemDelete
+    '#asset_form' : Assets.Form
   });
   
 });
@@ -27,11 +28,12 @@ Galleries.List = Behavior.create({
   
 });
 
-Galleries.Delete = Behavior.create({
+Galleries.Destroy = Behavior.create({
   
   onclick: function() {
-    if(confirm("Really Delete Category?")) {
-      gallery.GalleryDelete(this.element.up('.gallery'));
+    if(confirm("Really Delete Gallery?")) {
+      gallery.GalleryDestroy(this.element.up('.gallery'));
+      shop.CategorySelect($('gallery_create'));
     }
     
     return false;  
@@ -55,145 +57,133 @@ Assets.List = Behavior.create({
   
 });
 
+Assets.Form = Behavior.create({
+  
+  onsubmit: function() {
+    gallery.AssetSubmit();
+  }
+  
+});
+
 Assets.PopupClose = Behavior.create({
   
   onclick: function() { 
-    gallery.AssetFormClear();
+    gallery.AssetClear();
   }
   
 });
 
 var Gallery = Class.create({
   
-  GalleryClear: function() {
-    
-    // Remove Gallery Values
-    $('gallery_id').value = null;
-    $('gallery_title').value = null;
-    $('gallery_items').hide();
-    
-    // Remove Assets
-    $('asset_create').hide();
-    $('asset_asset').value = null;
-    
-    
-    // Reset Gallery Links
-    $$('.gallery.current').each(function(element) { 
-      element.removeClassName('current'); 
-      Galleries.List.attach(element); 
-    });
-    
-  },
-  
   GallerySelect: function(element) {
-    
     // Select Element, Remove Ability to select it again
+    this.GalleryClear();
+    
     element.addClassName('current');
     element.stopObserving('click');
-    
-    // Get assets
-    gallery.AssetsList(element);
+
+    $('gallery_items_list').innerHTML = '';
+    $('assets_list').innerHTML = '';
     
     if(element.getAttribute('data-id') == '') {
       // Prepare Gallery Create UI
       $('gallery_items_alt').show();
-      
+      $('gallery_items').hide();
+      $('gallery_items_alt').show();
+      $('asset_create').hide();
+      $('assets_list_alt').show();
+
       // Set Form to Create
-      $('gallery_form').setAttribute('action', $('galleries_path').value + '.js');
       $('gallery_submit').value = 'Create';
       $('gallery_method').value = 'post';
+      $('gallery_form').setAttribute('action', urlify($('galleries_path').value));
     } else {
-      
-      // Set Form to Update
-      $('gallery_form').setAttribute('action', $('galleries_path').value + '/' + element.getAttribute('data-id') + '.js');
-      $('gallery_method').value = 'put';
-      $('gallery_id').value     = element.getAttribute('data-id');
-      $('gallery_title').value  = element.getAttribute('data-title');
-      $('gallery_submit').value = 'Update';
-      
-      // Prepare Gallery Update UI
-      $('gallery_items_alt').hide();
-      $('gallery_items_list').innerHTML = null;
-      $('gallery_items').show().addClassName('pending');
-      
-      // Prepare Assets UI
+      showStatus("Loading the items...");
+            
       $('asset_create').show();
-      
-      new Ajax.Request($('gallery_items_path').value + '?' + new Date().getTime(), {
+      new Ajax.Request(urlify($('galleries_path').value,element.getAttribute('data-id')), {
         method: 'get',
-        parameters: { 
-          'gallery_id' : element.getAttribute('data-id')
-        },
         onSuccess: function(data) {
           
           // Add items to gallery and activate sort
-          $('gallery_items_list').innerHTML = data.responseText;
+          $('gallery').innerHTML = data.responseText;
           gallery.ItemsSort();
           
-          // Remove Ajax Loaders
-          $('gallery_items').removeClassName('pending');
+          $('gallery_items_alt').hide();
+          $('assets_list_alt').hide();
           
-        }
+          this.AssetsList($('galleries_list').down('.current'));
+        }.bind(this)
       });
     }
   },
   
-  GalleryDelete: function(element) {
+  GalleryCreate: function() {
+    $('galleries_list').insert({'top': this.response});
     
-    gallery.GalleryClear(); // Clear out gallery Details
-    element.hide(); // Hide Gallery select
+    var element = $('galleries_list').down();
     
-    new Ajax.Request($('galleries_path').value + '/' + element.getAttribute('data-id') + '/remove.js?' + new Date().getTime(), {
-      method: 'get',
+    Galleries.List.attach(element);
+    this.GallerySelect(element);
+  },
+  
+  GalleryUpdate: function() {
+    var element = $('galleries_list').down('.current');
+    
+    // This replaces the current item with the returned html
+    element = element.replace(this.response); 
+    
+    // element is still the old item, but the id is the same as the new, so call on that id
+    $(element.id).addClassName('current');
+    $(element.id).stopObserving('click');
+  },
+  
+  GalleryDestroy: function(element) {
+    showStatus('Deleting Gallery...');
+    element.hide();
+    new Ajax.Request(urlify($('galleries_path').value, element.readAttribute('data-id')), { 
+      method: 'delete',
       onSuccess: function(data) {
-        element.remove(); // Delete Gallery select
-        gallery.GallerySelect($('gallery_create')); // Reselect Create Gallery
-      }.bind(element),
+        element.remove();
+        hideStatus();
+      }.bind(this),
       onFailure: function(data) {
-        element.show(); // Show gallery select
-        gallery.GallerySelect(element); // Reselect Gallery
-      }
+        element.show();
+        alert(data.responseText);
+        hideStatus();
+      }.bind(this)
     });
   },
   
-  GalleriesLatestBind: function() {
-    var element = $('galleries_list').select(".gallery:last-child")[0];
+  GalleryClear: function() {
+    // Reset Gallery Links
+    $$('#galleries .gallery.current').each(function(element) { 
+      element.removeClassName('current'); 
+      Galleries.List.attach(element); 
+    });
     
-    gallery.GalleryClear(); // Resets Gallery
-    Galleries.List.attach(element); // Binds Gallery Select
-    gallery.GallerySelect(element); // Selects New Gallery
+    $$('#gallery .clearable').each(function(input) {
+      input.value = '';
+    });
     
-    return null;
-  },
-  
-  GalleriesUpdate: function() {
-    var element = $('galleries_list').down('.current');
-
-    element.setAttribute('data-title', $('gallery_title').value);
-    element.down('.title').innerHTML = $('gallery_title').value;
+    // Remove Assets
+    $('asset_create').hide();
+    $('assets_list').inner_html = '';
   },
   
   ItemAdd: function(element) {
     element.hide();
-    new Ajax.Request($('gallery_items_path').value + '/create.json?' + new Date().getTime(), {
+    new Ajax.Request(urlify($('galleries_path').value,$('gallery_id').value + '/items'), {
       method: 'post',
       parameters: {
-        'gallery_id' : $('gallery_id').value,
-        'item[asset_id]' : element.getAttribute('data-asset_id')
+        'gallery_item[asset_id]' : element.getAttribute('data-asset_id')
       },
       onSuccess: function(data) {
-        var response = data.responseText.evalJSON();
-        
-        // Turn asset into item
-        element.id = "gallery_item_" + response.id;
-        element.setAttribute('data-item_id', response.id);
-        
-        // Insert item into list, recall events
-        $('gallery_items_list').insert({ 'top' : element.removeClassName('asset').addClassName('gallery_item')});
+        // Insert item into list, re-call events
+        $('gallery_items_list').insert({ 'bottom' : data.responseText});
         gallery.ItemsSort();
-        element.stopObserving('click');
-        element.show();
         
+        element.remove();
       }.bind(element),
       onFailure: function() {
         element.show();
@@ -203,8 +193,8 @@ var Gallery = Class.create({
   
   ItemDelete: function(element) {
     element.hide();    
-    new Ajax.Request($('gallery_items_path').value + '/' + element.getAttribute('data-item_id') + '/remove.json?' + new Date().getTime(), {
-      method: 'get',
+    new Ajax.Request(urlify($('gallery_items_path').value,element.getAttribute('data-item_id')), {
+      method: 'delete',
       onSuccess: function(data) {
         this.response = data.responseText.evalJSON();
         
@@ -231,7 +221,7 @@ var Gallery = Class.create({
       overlap: 'horizontal',
       containment: ['gallery_items_list'],
       onUpdate: function(element) {
-        new Ajax.Request($('galleries_path').value + '/' + $('gallery_id').value  + '/reorder.json?' + new Date().getTime(), {
+        new Ajax.Request(urlify($('galleries_path').value + '/reorder',$('gallery_id').value), {
           method: 'put',
           parameters: {
             'id': $('gallery_id').value,
@@ -245,35 +235,52 @@ var Gallery = Class.create({
     });
   },
   
-  AssetsList: function(element) {
-    $('assets_list').innerHTML = null;
-    $('assets_list').addClassName('pending');
-    
-    new Ajax.Request($('gallery_assets_path').value + '?' + new Date().getTime(), {
+  AssetsList: function(element) {  
+    showStatus('and now the assets...');  
+    new Ajax.Request(urlify($('gallery_assets_path').value), {
       method: 'get',
       parameters: { 
         'filter[image]' : 1,
         'gallery_id' : element.getAttribute('data-id')
       },
-      onSuccess: function(data) {
+      onSuccess: function(data) {   
+        setStatus('All Done');     
         $('assets_list').innerHTML = data.responseText;
-        $('assets_list').removeClassName('pending');
+        hideStatus();
       }
     });
   },
   
-  AssetsLatestBind: function() {
-    gallery.AssetsClear();
+  AssetSubmit: function() {
+    showStatus('Saving...');
+  },
+  
+  AssetCreate: function() {
     Assets.List.attach($("assets_list").down(".asset"));
-
+    this.AssetClear();
+    
+    hideStatus();
+    
     return null;
   },
   
-  AssetsClear: function() {
+  AssetClear: function() {
     Element.closePopup('asset_create-popup');
-    $('asset_title').value = null;
-    $('asset_caption').value = null;
-    $('asset_asset').value = null;
+    
+    $$('#asset_form .clearable').each(function(input) {
+      input.value = '';
+    });
   }
   
 });
+
+function urlify(route, id) {
+  var url = route;
+  if ( id !== undefined ) {
+    url += '/' + id
+  }
+  
+  url += '.js?' + new Date().getTime();
+  
+  return url;
+}

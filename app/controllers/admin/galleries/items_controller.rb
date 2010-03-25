@@ -1,33 +1,70 @@
 class Admin::Galleries::ItemsController < Admin::ResourceController
   model_class GalleryItem
   
+  # GET /admin/galleries/:id/items
+  # GET /admin/galleries/:id/items.js                             AJAX and HTML
+  #----------------------------------------------------------------------------  
   def index
-    @gallery = Gallery.find(params[:gallery_id])
-    @gallery_items = @gallery.items
+    @gallery = Gallery.find(params[:id])
     
-    render :partial => 'item', :collection => @gallery_items
+    unless @gallery.items.nil?
+      respond_to do |format|
+        format.html { render }
+        format.js { render :partial => '/admin/galleries/items/excerpt', :collection => @gallery.items }
+      end
+    else
+      respond_to do |format|
+        format.html { render }
+        format.js { render :partial => '/admin/galleries/items/empty' }
+      end
+    end
   end
   
+  # GET /admin/galleries/items/:id
+  # GET /admin/galleries/items/:id.js                             AJAX and HTML
+  #----------------------------------------------------------------------------
+  def show
+    @gallery_item = GalleyItem.find(params[:id])
+    
+    respond_to do |format|
+      format.html { render }
+      format.js { render :partial => '/admin/galleries/items/item', :locals => { :item => @gallery_item } }
+    end
+  end
+  
+  # POST /admin/galleries/:id/items
+  # POST /admin/galleries/:id/items.js                            AJAX and HTML
+  #----------------------------------------------------------------------------
   def create 
-    @gallery = Gallery.find(params[:gallery_id])
-    @item = @gallery.items.new(params[:item])
+    @gallery = Gallery.find(params[:id])
+    @gallery_item = @gallery.items.new(params[:gallery_item])
     
     attr_hash =  {
       :include => :gallery,
       :only => [:id, :handle, :title, :caption] 
     }
     
-    if @item.save
+    if @gallery_item.save
       respond_to do |format|
-        format.json { render :json => @item.to_json(attr_hash) }
+        format.html { render }
+        format.js { render :partial => '/admin/galleries/items/excerpt', :locals => { :excerpt => @gallery_item } }
       end
     else
-      render :text => @item.inspect
+      respond_to do |format|
+        format.html { 
+          flash[:error] = "Unable to create new item."
+          render
+        }
+        format.js { render :text => @gallery_item.errors.to_json, :status => :unprocessable_entity }
+      end
     end
 
   end
   
-  def remove
+  # DELETE /admin/galleries/items/:id
+  # DELETE /admin/galleries/items/:id.js                          AJAX and HTML
+  #----------------------------------------------------------------------------
+  def destroy
     @item = GalleryItem.find(params[:id])
     @asset = @item.image
     

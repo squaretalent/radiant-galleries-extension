@@ -1,0 +1,6 @@
+%li.asset{:id => "asset_#{excerpt.id}", :'data-item_id' => nil, :'data-asset_id' => excerpt.id}
+  %img.image{:src => excerpt.thumbnail(:thumbnail), :alt => 'no image'}
+  %span.title= truncate excerpt.title, 35, '...'
+  %span.caption= excerpt.caption
+  .actions
+    %span.delete

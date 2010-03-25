@@ -1,4 +1,4 @@
-%input#gallery_title{:name => 'gallery[title]'}
-%input#gallery_submit{:name => 'submit', :type => 'submit', :value => 'Create'}
-%input#gallery_method{:name => '_method', :type => 'hidden', :value => 'post'}
-%input#gallery_id{:name => 'gallery[id]', :type => 'hidden'}
+= f.hidden_field :id, :class => 'clearable'
+= hidden_field_tag '_method', 'post', :id => 'gallery_method', :class => 'clearable'
+= f.text_field :title, :class => 'clearable'
+= f.submit 'Create'

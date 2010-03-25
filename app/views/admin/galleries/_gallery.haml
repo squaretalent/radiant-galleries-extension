@@ -1,4 +1,10 @@
-%li.gallery{:'data-id' => gallery.id, :'data-title' => gallery.title}
-  %span.title= gallery.title
-  .actions
-    %span.delete
+#gallery_fields
+  - form_for :gallery, :url => admin_galleries_path, :html => { :method => "post", :multipart => true, :id => 'gallery_form' } do |f|
+    = render 'fields', :f => f
+#gallery_items
+  %span.note you can drag these items around to reorder them
+  %ul#gallery_items_list
+    - unless gallery.nil? or gallery.items.empty?
+      = render :partial => '/admin/galleries/items/excerpt', :collection => gallery.items
+#gallery_items_alt
+  %span.note Once you have created the gallery you can start adding items

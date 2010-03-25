@@ -7,16 +7,16 @@
   %p Galleries let you organise items you want your visitors to see
 
   #galleries
-    #gallery_create.gallery{:'data-id' => '', :'data-title' => ''}
+    #gallery_create.gallery.current{:'data-id' => '', :'data-title' => ''}
       %span.title New Gallery
     %ul#galleries_list
-      = render :partial => '/admin/galleries/gallery', :collection => @galleries
+      = render :partial => '/admin/galleries/excerpt', :collection => @galleries
       - if @galleries.empty?
         %li#galleries_empty.gallery
           %span.title Nothing Yet
     
   #gallery
-    = render 'form'
+    = render 'gallery'
       
 #assets_content
   
@@ -29,11 +29,14 @@
       %span.title
         %a.popup{:href => '#asset_create-popup'} New Item
     
+    #assets_list_alt.asset{:'data-asset_id' => nil}
+      %span.title Select a Gallery
+      %sapn.caption Get started by selecting a gallery
+    
     %ul#assets_list
-      = render :partial => 'admin/galleries/assets/denied'
       
     #asset_create-popup{ :style => 'display:none' }
-      = render :partial => 'admin/galleries/assets/form'
+      = render :partial => 'admin/galleries/assets/asset'
     
 #galleries_routes
   = render :partial => '/admin/galleries/routes'
