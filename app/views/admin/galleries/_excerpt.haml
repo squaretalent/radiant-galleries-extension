@@ -1,4 +1,4 @@
-%li.gallery{:'data-id' => excerpt.id, :'data-title' => excerpt.title}
+%li.gallery{:id => "gallery_#{excerpt.id}", :'data-id' => excerpt.id, :'data-title' => excerpt.title}
   %span.title= excerpt.title
   .actions
     %span.delete

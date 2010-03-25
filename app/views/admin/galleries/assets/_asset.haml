@@ -1,4 +1,4 @@
-- form_for :asset, :url => create_admin_gallery_asset_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'asset_frame', :id => 'asset_form' } do |f|
+- form_for :asset, :url => admin_galleries_assets_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'asset_frame', :id => 'asset_form' } do |f|
   %ol
     %li#field_asset_title
       = f.label :title, 'Name'

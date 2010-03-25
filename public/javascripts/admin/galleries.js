@@ -10,6 +10,8 @@ document.observe("dom:loaded", function() {
   Event.addBehavior({    
     '#galleries .gallery:not(#galleries_empty)' : Galleries.List,
     '#galleries .gallery:not(#galleries_empty) .delete' : Galleries.Destroy,
+    '#gallery_form' : Galleries.Form,
+    
     '#gallery_items_list .gallery_item .delete' : Galleries.ItemDelete,
     
     '#assets_list .asset:not(#assets_empty)' : Assets.List,
@@ -33,12 +35,21 @@ Galleries.Destroy = Behavior.create({
   onclick: function() {
     if(confirm("Really Delete Gallery?")) {
       gallery.GalleryDestroy(this.element.up('.gallery'));
-      shop.CategorySelect($('gallery_create'));
+      gallery.GallerySelect($('gallery_create'));
     }
     
     return false;  
   }
   
+});
+
+Galleries.Form = Behavior.create({
+
+  onsubmit: function() {
+    gallery.GallerySubmit(this.element);
+    return false;
+  }
+
 });
 
 Galleries.ItemDelete = Behavior.create({
@@ -48,6 +59,7 @@ Galleries.ItemDelete = Behavior.create({
   }
   
 });
+
 
 Assets.List = Behavior.create({
   
@@ -96,17 +108,23 @@ var Gallery = Class.create({
       // Set Form to Create
       $('gallery_submit').value = 'Create';
       $('gallery_method').value = 'post';
-      $('gallery_form').setAttribute('action', urlify($('galleries_path').value));
-    } else {
+      $('gallery_form').setAttribute('action', urlify($('admin_galleries_path').value));
+    } else {      
       showStatus("Loading the items...");
             
       $('asset_create').show();
-      new Ajax.Request(urlify($('galleries_path').value,element.getAttribute('data-id')), {
+      
+      new Ajax.Request(urlify($('admin_galleries_path').value,element.getAttribute('data-id')), {
         method: 'get',
         onSuccess: function(data) {
           
           // Add items to gallery and activate sort
           $('gallery').innerHTML = data.responseText;
+          
+          $('gallery_submit').value = 'Update';
+          $('gallery_method').value = 'put';
+          $('gallery_form').setAttribute('action', urlify($('admin_galleries_path').value,element.readAttribute('data-id')));
+          
           gallery.ItemsSort();
           
           $('gallery_items_alt').hide();
@@ -116,6 +134,26 @@ var Gallery = Class.create({
         }.bind(this)
       });
     }
+  },
+  
+  GallerySubmit: function(element) {
+    this.data = element.serialize(true);
+    this.element = element;
+    
+    if(this.data._method == 'post') { showStatus('Creating...'); }
+    else { showStatus('Saving...'); }
+    
+    new Ajax.Request(urlify(element.action), { 
+      method: this.data._method,
+      parameters: this.data,
+      onSuccess: function(data) {
+        this.response = data.responseText;
+        hideStatus();
+        
+        if(this.data._method == 'post') { this.GalleryCreate(); } 
+        else { this.GalleryUpdate(); }
+      }.bind(this),
+    });
   },
   
   GalleryCreate: function() {
@@ -141,7 +179,7 @@ var Gallery = Class.create({
   GalleryDestroy: function(element) {
     showStatus('Deleting Gallery...');
     element.hide();
-    new Ajax.Request(urlify($('galleries_path').value, element.readAttribute('data-id')), { 
+    new Ajax.Request(urlify($('admin_galleries_path').value, element.readAttribute('data-id')), { 
       method: 'delete',
       onSuccess: function(data) {
         element.remove();
@@ -172,10 +210,12 @@ var Gallery = Class.create({
   },
   
   ItemAdd: function(element) {
+    showStatus('Adding Item...');
     element.hide();
-    new Ajax.Request(urlify($('galleries_path').value,$('gallery_id').value + '/items'), {
+    new Ajax.Request(urlify($('admin_galleries_items_path').value), {
       method: 'post',
       parameters: {
+        'gallery_id' : $('gallery_id').value,
         'gallery_item[asset_id]' : element.getAttribute('data-asset_id')
       },
       onSuccess: function(data) {
@@ -184,16 +224,18 @@ var Gallery = Class.create({
         gallery.ItemsSort();
         
         element.remove();
+        hideStatus();
       }.bind(element),
       onFailure: function() {
         element.show();
+        hideStatus();
       }
     });
   },
   
   ItemDelete: function(element) {
     element.hide();    
-    new Ajax.Request(urlify($('gallery_items_path').value,element.getAttribute('data-item_id')), {
+    new Ajax.Request(urlify($('admin_galleries_items_path').value,element.getAttribute('data-item_id')), {
       method: 'delete',
       onSuccess: function(data) {
         this.response = data.responseText.evalJSON();
@@ -221,7 +263,7 @@ var Gallery = Class.create({
       overlap: 'horizontal',
       containment: ['gallery_items_list'],
       onUpdate: function(element) {
-        new Ajax.Request(urlify($('galleries_path').value + '/reorder',$('gallery_id').value), {
+        new Ajax.Request(urlify($('admin_galleries_path').value + '/sort',$('gallery_id').value), {
           method: 'put',
           parameters: {
             'id': $('gallery_id').value,
@@ -236,8 +278,8 @@ var Gallery = Class.create({
   },
   
   AssetsList: function(element) {  
-    showStatus('and now the assets...');  
-    new Ajax.Request(urlify($('gallery_assets_path').value), {
+    showStatus('Loading everything else...');  
+    new Ajax.Request(urlify($('admin_galleries_assets_path').value), {
       method: 'get',
       parameters: { 
         'filter[image]' : 1,

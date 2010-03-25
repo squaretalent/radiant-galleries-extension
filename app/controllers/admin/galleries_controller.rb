@@ -35,7 +35,7 @@ class Admin::GalleriesController < Admin::ResourceController
     if @gallery.save
       respond_to do |format|
         format.html { render }
-        format.js { render :partial => '/admin/shop/categories/excerpt', :locals => { :excerpt => @gallery } }
+        format.js { render :partial => '/admin/galleries/excerpt', :locals => { :excerpt => @gallery } }
       end
     else
       respond_to do |format|
@@ -60,7 +60,7 @@ class Admin::GalleriesController < Admin::ResourceController
           flash[:notice] = "Gallery updated successfully."
           render
         }
-        format.js { render :partial => '/admin/shop/categories/excerpt', :locals => { :excerpt => @gallery } }
+        format.js { render :partial => '/admin/galleries/excerpt', :locals => { :excerpt => @gallery } }
       end
     else
       respond_to do |format|

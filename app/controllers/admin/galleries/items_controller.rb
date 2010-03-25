@@ -1,8 +1,8 @@
 class Admin::Galleries::ItemsController < Admin::ResourceController
   model_class GalleryItem
   
-  # GET /admin/galleries/:id/items
-  # GET /admin/galleries/:id/items.js                             AJAX and HTML
+  # GET /admin/galleries/items
+  # GET /admin/galleries/items.js                                 AJAX and HTML
   #----------------------------------------------------------------------------  
   def index
     @gallery = Gallery.find(params[:id])
@@ -32,11 +32,11 @@ class Admin::Galleries::ItemsController < Admin::ResourceController
     end
   end
   
-  # POST /admin/galleries/:id/items
-  # POST /admin/galleries/:id/items.js                            AJAX and HTML
+  # POST /admin/galleries/items
+  # POST /admin/galleries/items.js                                AJAX and HTML
   #----------------------------------------------------------------------------
   def create 
-    @gallery = Gallery.find(params[:id])
+    @gallery = Gallery.find(params[:gallery_id])
     @gallery_item = @gallery.items.new(params[:gallery_item])
     
     attr_hash =  {
@@ -58,7 +58,6 @@ class Admin::Galleries::ItemsController < Admin::ResourceController
         format.js { render :text => @gallery_item.errors.to_json, :status => :unprocessable_entity }
       end
     end
-
   end
   
   # DELETE /admin/galleries/items/:id

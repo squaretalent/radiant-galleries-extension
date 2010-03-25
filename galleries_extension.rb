@@ -9,15 +9,12 @@ class GalleriesExtension < Radiant::Extension
   define_routes do |map|
     map.namespace :admin, :member => {:remove => :get} do |admin|
 
-      map.admin_gallery_assets 'admin/galleries/assets.:format', :controller => 'admin/galleries/assets', :action => 'index', :conditions => { :method => :get }
-      map.create_admin_gallery_asset 'admin/galleries/assets/create.:format', :controller => 'admin/galleries/assets', :action => 'create', :conditions => { :method => :post }
+      map.sort_admin_gallery 'admin/galleries/sort/:id.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
       
-      map.admin_gallery_item 'admin/galleries/items/:id.:format', :controller => 'admin/galleries/items', :action => 'show', :conditions => { :method => :get }
-      map.delete_admin_gallery_item 'admin/galleries/items/:id.:format', :controller => 'admin/galleries/items', :action => 'destroy', :conditions => { :method => :delete }
-      map.create_admin_gallery_item 'admin/galleries/:id/items.:format', :controller => 'admin/galleries/items', :action => 'create', :conditions => { :method => :post }
-      map.admin_gallery_items 'admin/galleries/:id/items.:format', :controller => 'admin/galleries/items', :action => 'index', :conditions => { :method => :get }
-      
-      map.reorder_admin_gallery 'admin/galleries/reorder/:id.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
+      admin.namespace :galleries do |galleries|
+        galleries.resources :items
+        galleries.resources :assets
+      end
       admin.resources :galleries
     end
     map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'
@@ -27,6 +24,7 @@ class GalleriesExtension < Radiant::Extension
   extension_config do |config|
     config.gem 'paperclip', :version => '~> 2.3.1.1', :source => 'http://gemcutter.org'
     config.gem 'acts_as_list', :source => 'http://gemcutter.org'
+    #config.gem 'radiant-paperclipped-extension'
   end
   
   def activate
