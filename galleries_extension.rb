@@ -35,6 +35,7 @@ class GalleriesExtension < Radiant::Extension
     end
     
     Page.class_eval { include GalleryTags, GalleryItemTags, PageExtensionsForGallery }
+    Asset.class_eval { include AssetGalleryItemAssociations }
     
     tab 'Content' do
       add_item 'Galleries', '/admin/galleries', :after => 'Pages'
