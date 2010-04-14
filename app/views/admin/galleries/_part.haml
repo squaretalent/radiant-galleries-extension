@@ -1,0 +1,3 @@
+.page{:id => "gallery_#{part[:title].to_slug}", 'data-caption'=>h(part[:title])}
+  .part{:id => "gallery-part-#{part[:title].to_slug}"}
+    = render :partial => "admin/galleries/parts/#{part[:title]}", :locals => { :part => part }

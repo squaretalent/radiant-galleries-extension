@@ -1,20 +1,19 @@
-- form_for :asset, :url => admin_galleries_assets_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'asset_frame', :id => 'asset_form' } do |f|
-  %ol
-    %li#field_asset_title
-      = f.label :title, 'Name'
-      = f.text_field :title, :class => 'clearable'
-      %span.note This is optional
-    %li#field_asset_caption
-      = f.label :caption
-      = f.text_field :caption, :class => 'clearable'
-      %span.note This is optional
-    %li#field_asset_asset
-      = f.label :asset, 'Choose File'
-      = f.file_field :asset, :class => 'clearable'
-
-    .upload-buttons
-      = f.submit 'Create'
+%h3.title= t('upload_image')
+.popup_content
+  - form_for :asset, :url => admin_galleries_assets_path(:format => 'js'), :html => { :method => "post", :multipart => true, :target => 'asset_frame', :id => 'asset_form' } do |f|
+    %ol
+      %li#asset_title
+        = f.label :title, t('name')
+        = f.text_field :title, :class => 'clearable'
+      %li#asset_caption
+        = f.label :caption, t('caption')
+        = f.text_field :caption, :class => 'clearable'
+      %li#asset_file
+        = f.file_field :asset, :class => 'clearable'
+    
+      .upload-buttons
+        = f.submit 'Create'
   
-  %iframe#asset_frame{ :name => 'asset_frame', :src => 'about:blank' }
+    %iframe#asset_frame{ :name => 'asset_frame', :src => 'about:blank' }
 
-%a#asset_create-popup_close{ :href => '#' } Close
+  %a#asset_popup_close{ :href => '#' } Close

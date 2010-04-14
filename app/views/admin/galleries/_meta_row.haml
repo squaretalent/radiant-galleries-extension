@@ -1,0 +1,4 @@
+%tr
+  %th.label
+    %label{:for=>"gallery[#{meta_row[:field]}"}= t(meta_row[:field])
+  %td.field= f.send(meta_row[:type], meta_row[:field], *meta_row[:args])

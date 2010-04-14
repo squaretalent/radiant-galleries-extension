@@ -1,0 +1,21 @@
+- include_stylesheet 'admin/extensions/galleries/forms'
+- include_stylesheet 'admin/extensions/galleries/galleries'
+
+- include_javascript 'admin/dragdrop'
+- include_javascript 'admin/extensions/galleries/galleries'
+
+- @page_title = @gallery.title + ' - ' + default_page_title
+
+- render_region :main do |main|
+  - main.edit_header do
+    %h1= t('edit_gallery')    
+  - main.edit_form do
+    - form_for :gallery, @gallery, :url => admin_gallery_path(@gallery), :html => {:method => :put, :multipart => true, :id => 'edit_gallery', 'data-onsubmit_status'=>"Saving Changes&#8230;"} do |f|
+      = f.hidden_field :id
+      = render :partial => 'fields', :object => f
+  - main.edit_popups do
+    #popups
+      = render 'popup'
+- render_region :sidebar do |sidebar|
+  #sidebar
+    = render 'sidebar'

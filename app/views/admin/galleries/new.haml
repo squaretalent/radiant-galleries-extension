@@ -1,0 +1,11 @@
+- include_stylesheet 'admin/extensions/galleries/forms'
+- include_stylesheet 'admin/extensions/galleries/galleries'
+
+- render_region :main do |main|
+  - main.edit_header do
+    %h1= t('new_gallery')    
+  - main.edit_form do
+    - form_for :gallery, @gallery, :url => admin_galleries_path, :html => {:id => 'new_gallery', :multipart => true, 'data-onsubmit_status'=>"Creating Gallery&#8230;"} do |f|
+      = render :partial => 'fields', :object => f
+  - main.edit_popups do
+    = render 'popup'

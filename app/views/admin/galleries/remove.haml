@@ -1,0 +1,12 @@
+%h1
+  = t('remove_gallery')
+
+%p
+  = t('text.remove_gallery.warning')
+
+- form_for [:admin, @gallery.becomes(Gallery)], :html => {:method => :delete, 'data-onsubmit_status'=>"Removing Gallery&#8230;"} do
+  
+  %p.buttons
+    %input.button{:type=>"submit", :value => t('delete_gallery') }/
+    = t('or')    
+    = link_to t('cancel'), admin_galleries_path

@@ -1,7 +1,7 @@
 class Gallery < ActiveRecord::Base
   
   has_many :items, :order => 'position', :class_name => 'GalleryItem', :foreign_key => :gallery_id, :dependent => :destroy
-  has_many :images, :through => :items
+  has_many :assets, :through => :items
   
   validates_presence_of :title
   validates_presence_of :handle
@@ -13,8 +13,10 @@ class Gallery < ActiveRecord::Base
   
   before_validation :filter_handle
   
+  default_scope :order => 'created_at DESC'
+  
   def slug
-    "/gallery/#{self.handle}"
+    "/news/galleries/#{self.handle}"
   end
   
   def layout
@@ -33,10 +35,14 @@ class Gallery < ActiveRecord::Base
     end
   end
   
+  def assets_available
+    Asset.search('', {:image => 1}) - self.assets
+  end
+  
 private
   
   def filter_handle
-    self.handle = self.title if self.handle.nil?
+    self.handle = self.title if !self.title.nil? and (self.handle.nil? or self.handle.empty?)
     self.handle = self.handle.downcase.gsub(/[^-a-z0-9~\s\.:;+=_]/, '').strip.gsub(/[\s\.:;=+]+/, '-')
   end
   

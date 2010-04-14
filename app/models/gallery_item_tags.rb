@@ -33,7 +33,7 @@ module GalleryItemTags
     tag.expand unless tag.locals.item.nil?
   end
   
-  [:title, :caption, :handle].each do |symbol|
+  [:title, :caption, :handle, :position].each do |symbol|
     tag "gallery:item:#{symbol}" do |tag|
       unless tag.locals.item.nil?
         hash = tag.locals.item
@@ -56,7 +56,7 @@ module GalleryItemTags
     else
       style = tag.attr['style']
     end
-    tag.locals.item.image.thumbnail(style.to_sym) unless tag.locals.item.nil?
+    tag.locals.item.asset.thumbnail(style.to_sym) unless tag.locals.item.nil?
   end
 
   tag 'pagey' do |tag|

@@ -1,0 +1,10 @@
+%tr
+  %th.label
+    %label{:for=>"gallery[#{:custom_layout}"}= t('custom_layout')
+  %td.field
+    = f.collection_select :custom_layout, Layout.all, :name, :name
+%tr
+  %th.label
+    %label{:for=>"gallery[#{:custom_item_layout}"}= t('custom_item_layout')
+  %td.field
+    = f.collection_select :custom_item_layout, Layout.all, :name, :name

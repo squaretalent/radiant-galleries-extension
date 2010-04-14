@@ -1,0 +1,10 @@
+%tr.node.page.level_0{:id => "gallery_#{node.id}"}
+
+  %td.page
+    %a{ :href => edit_admin_gallery_path(node), :title => node.title}
+      = image('page', :class => "icon", :alt => '', :title => '')
+      %span.title= node.title
+
+  %td.description= node.handle
+  
+  %td.remove= link_to t('remove'), remove_admin_gallery_url(node)

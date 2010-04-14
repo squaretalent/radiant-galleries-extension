@@ -1,0 +1,10 @@
+%p.title= t('images')
+
+%span.button#create_item
+  %a{:href => '#asset_popup', :class => 'popup'}= image('plus') + " " + t("new_image")
+
+%p.description
+  Click on an image to store it in the gallery
+  
+%ul#assets_list
+  = render :partial => '/admin/galleries/assets/excerpt', :collection => gallery_available_assets(@gallery)

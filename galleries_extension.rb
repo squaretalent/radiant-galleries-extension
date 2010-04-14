@@ -1,5 +1,12 @@
-# Uncomment this if you reference any of your controllers in activate
-# require_dependency 'application_controller'
+require_dependency "#{File.expand_path(File.dirname(__FILE__))}/lib/galleries_extensions"
+require_dependency "#{File.expand_path(File.dirname(__FILE__))}/lib/page_extensions_for_gallery"
+
+require_dependency "#{File.expand_path(File.dirname(__FILE__))}/lib/gallery_page_extensions"
+require_dependency "#{File.expand_path(File.dirname(__FILE__))}/lib/galleries_admin_ui"
+
+require_dependency "#{File.expand_path(File.dirname(__FILE__))}/lib/asset_gallery_item_associations"
+
+include Admin::GalleriesHelper
 
 class GalleriesExtension < Radiant::Extension
   version "1.0.1"
@@ -9,16 +16,17 @@ class GalleriesExtension < Radiant::Extension
   define_routes do |map|
     map.namespace :admin, :member => {:remove => :get} do |admin|
 
-      map.sort_admin_gallery 'admin/galleries/sort/:id.:format', :controller => 'admin/galleries', :action => 'reorder', :conditions => { :method => :put }
-      
       admin.namespace :galleries do |galleries|
-        galleries.resources :items
-        galleries.resources :assets
+        galleries.resources :assets, :controller => 'assets', :only => [ :index, :show, :create ]
+        galleries.sort 'sort.:format', :action => 'sort', :conditions => { :method => :put }
       end
-      admin.resources :galleries
+      admin.resources :galleries do |gallery|
+        gallery.items_sort 'items/sort.:format', :controller => 'galleries/items', :action => 'sort', :conditions => { :method => :put }
+        gallery.resources :items, :controller => 'galleries/items', :only => [ :index, :create, :show, :destroy ]
+      end
     end
-    map.connect 'gallery/:handle', :controller => 'galleries', :action => 'show'
-    map.connect 'gallery/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show'
+    map.connect 'news/galleries/:handle', :controller => 'galleries', :action => 'show'
+    map.connect 'news/galleries/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show'
   end
   
   extension_config do |config|
@@ -27,15 +35,20 @@ class GalleriesExtension < Radiant::Extension
     #config.gem 'radiant-paperclipped-extension'
   end
   
-  def activate
+  def activate    
+    unless defined? admin.galleries
+      Radiant::AdminUI.send :include, GalleriesAdminUI
+      admin.galleries = Radiant::AdminUI.load_default_galleries_regions
+    end
+    
+    Page.class_eval { include GalleryTags, GalleryItemTags, PageExtensionsForGallery }
+    Asset.class_eval { include AssetGalleryItemAssociations }
+    Admin::GalleriesController.send( :include, GalleriesExtensions )
     
     UserActionObserver.instance
     UserActionObserver.class_eval do
       observe Gallery, GalleryItem
     end
-    
-    Page.class_eval { include GalleryTags, GalleryItemTags, PageExtensionsForGallery }
-    Asset.class_eval { include AssetGalleryItemAssociations }
     
     tab 'Content' do
       add_item 'Galleries', '/admin/galleries', :after => 'Pages'

@@ -1,226 +1,63 @@
-var Galleries = {};
-var Assets = {};
+var GalleryAssets = {};
 
 document.observe("dom:loaded", function() {
-
   gallery = new Gallery();
-  gallery.GalleryClear(); // Remove any stray data
-  gallery.GallerySelect($('gallery_create')); // By default create gallery
+  gallery.Initialize();
   
-  Event.addBehavior({    
-    '#galleries .gallery:not(#galleries_empty)' : Galleries.List,
-    '#galleries .gallery:not(#galleries_empty) .delete' : Galleries.Destroy,
-    '#gallery_form' : Galleries.Form,
+  Event.addBehavior({
+    '#asset_popup_close:click' : function(e) { gallery.AssetClear(); },
+    '#asset_form:submit' : function(e) { gallery.AssetSubmit(); },
     
-    '#gallery_items_list .gallery_item .delete' : Galleries.ItemDelete,
-    
-    '#assets_list .asset:not(#assets_empty)' : Assets.List,
-    '#asset_create-popup_close' : Assets.PopupClose,
-    '#asset_form' : Assets.Form
+    '#assets_list .asset:click' : function(e) { gallery.ItemCreate($(this)); },
+    '#items_list .item .actions .delete:click' : function(e) { gallery.ItemDestroy($(this).up('.item'))}
   });
-  
 });
 
-Galleries.List = Behavior.create({
-  
-  onclick: function() {
-    gallery.GalleryClear();
-    gallery.GallerySelect(this.element);
-  }
-  
-});
-
-Galleries.Destroy = Behavior.create({
-  
-  onclick: function() {
-    if(confirm("Really Delete Gallery?")) {
-      gallery.GalleryDestroy(this.element.up('.gallery'));
-      gallery.GallerySelect($('gallery_create'));
-    }
-    
-    return false;  
-  }
-  
-});
-
-Galleries.Form = Behavior.create({
-
-  onsubmit: function() {
-    gallery.GallerySubmit(this.element);
-    return false;
-  }
-
-});
-
-Galleries.ItemDelete = Behavior.create({
-  
-  onclick: function() {
-    gallery.ItemDelete(this.element.up('.gallery_item'));
-  }
-  
-});
-
-
-Assets.List = Behavior.create({
+GalleryAssets.List = Behavior.create({
   
   onclick: function() { 
-    gallery.ItemAdd(this.element);
-  }
-  
-});
-
-Assets.Form = Behavior.create({
-  
-  onsubmit: function() {
-    gallery.AssetSubmit();
-  }
-  
-});
-
-Assets.PopupClose = Behavior.create({
-  
-  onclick: function() { 
-    gallery.AssetClear();
+    gallery.ItemCreate(this.element);
   }
   
 });
 
 var Gallery = Class.create({
   
-  GallerySelect: function(element) {
-    // Select Element, Remove Ability to select it again
-    this.GalleryClear();
-    
-    element.addClassName('current');
-    element.stopObserving('click');
-
-    $('gallery_items_list').innerHTML = '';
-    $('assets_list').innerHTML = '';
-    
-    if(element.getAttribute('data-id') == '') {
-      // Prepare Gallery Create UI
-      $('gallery_items_alt').show();
-      $('gallery_items').hide();
-      $('gallery_items_alt').show();
-      $('asset_create').hide();
-      $('assets_list_alt').show();
-
-      // Set Form to Create
-      $('gallery_submit').value = 'Create';
-      $('gallery_method').value = 'post';
-      $('gallery_form').setAttribute('action', urlify($('admin_galleries_path').value));
-    } else {      
-      showStatus("Loading the items...");
-            
-      $('asset_create').show();
-      
-      new Ajax.Request(urlify($('admin_galleries_path').value,element.getAttribute('data-id')), {
-        method: 'get',
-        onSuccess: function(data) {
-          
-          // Add items to gallery and activate sort
-          $('gallery').innerHTML = data.responseText;
-          
-          $('gallery_submit').value = 'Update';
-          $('gallery_method').value = 'put';
-          $('gallery_form').setAttribute('action', urlify($('admin_galleries_path').value,element.readAttribute('data-id')));
-          
-          gallery.ItemsSort();
-          
-          $('gallery_items_alt').hide();
-          $('assets_list_alt').hide();
-          
-          this.AssetsList($('galleries_list').down('.current'));
-        }.bind(this)
-      });
+  Initialize: function() {
+    if($('gallery_id')) {
+      this.ItemsSort();
     }
   },
   
-  GallerySubmit: function(element) {
-    this.data = element.serialize(true);
-    this.element = element;
-    
-    if(this.data._method == 'post') { showStatus('Creating...'); }
-    else { showStatus('Saving...'); }
-    
-    new Ajax.Request(urlify(element.action), { 
-      method: this.data._method,
-      parameters: this.data,
-      onSuccess: function(data) {
-        this.response = data.responseText;
-        hideStatus();
-        
-        if(this.data._method == 'post') { this.GalleryCreate(); } 
-        else { this.GalleryUpdate(); }
-      }.bind(this),
-    });
-  },
-  
-  GalleryCreate: function() {
-    $('galleries_list').insert({'top': this.response});
-    
-    var element = $('galleries_list').down();
-    
-    Galleries.List.attach(element);
-    this.GallerySelect(element);
-  },
-  
-  GalleryUpdate: function() {
-    var element = $('galleries_list').down('.current');
-    
-    // This replaces the current item with the returned html
-    element = element.replace(this.response); 
-    
-    // element is still the old item, but the id is the same as the new, so call on that id
-    $(element.id).addClassName('current');
-    $(element.id).stopObserving('click');
-  },
-  
-  GalleryDestroy: function(element) {
-    showStatus('Deleting Gallery...');
-    element.hide();
-    new Ajax.Request(urlify($('admin_galleries_path').value, element.readAttribute('data-id')), { 
-      method: 'delete',
-      onSuccess: function(data) {
-        element.remove();
-        hideStatus();
-      }.bind(this),
-      onFailure: function(data) {
-        element.show();
-        alert(data.responseText);
-        hideStatus();
+  ItemsSort: function() {
+    Sortable.create('items_list', {
+      constraint: false, 
+      overlap: 'horizontal',
+      containment: ['items_list'],
+      onUpdate: function(element) {
+        new Ajax.Request(urlify($('admin_gallery_items_sort_path').value), {
+          method: 'put',
+          parameters: {
+            'gallery_id': $('gallery_id').value,
+            'items':Sortable.serialize('items_list')
+          }
+        });
       }.bind(this)
     });
   },
   
-  GalleryClear: function() {
-    // Reset Gallery Links
-    $$('#galleries .gallery.current').each(function(element) { 
-      element.removeClassName('current'); 
-      Galleries.List.attach(element); 
-    });
-    
-    $$('#gallery .clearable').each(function(input) {
-      input.value = '';
-    });
-    
-    // Remove Assets
-    $('asset_create').hide();
-    $('assets_list').inner_html = '';
-  },
-  
-  ItemAdd: function(element) {
+  ItemCreate: function(element) {
     showStatus('Adding Item...');
     element.hide();
-    new Ajax.Request(urlify($('admin_galleries_items_path').value), {
+    new Ajax.Request(urlify($('admin_gallery_items_path').value), {
       method: 'post',
       parameters: {
         'gallery_id' : $('gallery_id').value,
-        'gallery_item[asset_id]' : element.getAttribute('data-asset_id')
+        'gallery_item[asset_id]' : element.getAttribute('data-id')
       },
       onSuccess: function(data) {
         // Insert item into list, re-call events
-        $('gallery_items_list').insert({ 'bottom' : data.responseText});
+        $('items_list').insert({ 'bottom' : data.responseText});
         gallery.ItemsSort();
         
         element.remove();
@@ -233,72 +70,30 @@ var Gallery = Class.create({
     });
   },
   
-  ItemDelete: function(element) {
-    element.hide();    
-    new Ajax.Request(urlify($('admin_galleries_items_path').value,element.getAttribute('data-item_id')), {
+  ItemDestroy: function(element) {
+    showStatus('Deleting Item...');
+    element.hide();
+    new Ajax.Request(urlify($('admin_gallery_items_path').value, element.readAttribute('data-id')), { 
       method: 'delete',
       onSuccess: function(data) {
-        this.response = data.responseText.evalJSON();
-        
-        // Turn item into Asset
-        element.removeClassName('gallery_item').addClassName('asset');
-        element.setAttribute('data-asset_id', this.response.id);
-        element.id = "asset_" + this.response.id;
-        
-        // Add asset into list, recall events
-        $('assets_list').insert({'top': element});
-        element.show();
-        gallery.AssetsLatestBind();
-        
-      }.bind(element),
-      onFailure: function() {
-        element.show();
-      }
-    });
-  },
-  
-  ItemsSort: function() {
-    Sortable.create('gallery_items_list', {
-      constraint: false, 
-      overlap: 'horizontal',
-      containment: ['gallery_items_list'],
-      onUpdate: function(element) {
-        new Ajax.Request(urlify($('admin_galleries_path').value + '/sort',$('gallery_id').value), {
-          method: 'put',
-          parameters: {
-            'id': $('gallery_id').value,
-            'items':Sortable.serialize('gallery_items_list')
-          },
-          onSuccess: function(data) {
-            // TODO Not really necessary, maybe failure
-          }
-        });
-      }
-    });
-  },
-  
-  AssetsList: function(element) {  
-    showStatus('Loading everything else...');  
-    new Ajax.Request(urlify($('admin_galleries_assets_path').value), {
-      method: 'get',
-      parameters: { 
-        'filter[image]' : 1,
-        'gallery_id' : element.getAttribute('data-id')
-      },
-      onSuccess: function(data) {   
-        setStatus('All Done');     
-        $('assets_list').innerHTML = data.responseText;
+        $('assets_list').insert({ 'bottom' : data.responseText });
+        element.remove();
         hideStatus();
-      }
+      }.bind(this),
+      onFailure: function(data) {
+        element.show();
+        hideStatus();
+      }.bind(this)
     });
   },
   
   AssetSubmit: function() {
-    showStatus('Saving...');
+    showStatus('Uploading Item...');
   },
   
   AssetCreate: function() {
-    Assets.List.attach($("assets_list").down(".asset"));
+    GalleryAssets.List.attach($("assets_list").down(".asset"));
+    this.ItemCreate($("assets_list").down(".asset"));
     this.AssetClear();
     
     hideStatus();
@@ -307,7 +102,7 @@ var Gallery = Class.create({
   },
   
   AssetClear: function() {
-    Element.closePopup('asset_create-popup');
+    Element.closePopup('asset_popup');
     
     $$('#asset_form .clearable').each(function(input) {
       input.value = '';

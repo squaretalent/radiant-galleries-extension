@@ -3,7 +3,7 @@ class GalleryItem < ActiveRecord::Base
   belongs_to :gallery, :class_name => 'Gallery'
   acts_as_list :scope => :gallery
   
-  belongs_to :image, :class_name => 'Asset', :foreign_key => 'asset_id'
+  belongs_to :asset, :class_name => 'Asset', :foreign_key => 'asset_id'
   
   validates_presence_of :title
   validates_presence_of :handle
@@ -17,7 +17,7 @@ class GalleryItem < ActiveRecord::Base
   before_validation :filter_handle
   
   def slug
-    "/gallery/#{self.gallery.handle}/#{self.handle}"
+    "/news/galleries/#{self.gallery.handle}/#{self.handle}"
   end
   
   def layout
@@ -27,9 +27,9 @@ class GalleryItem < ActiveRecord::Base
 private
   
   def set_title_handle_and_caption
-    self.title = self.image.title if self.title.nil?
+    self.title = self.asset.title if self.title.nil?
     self.handle = self.title if self.handle.nil?
-    self.caption = self.image.caption if self.caption.nil?
+    self.caption = self.asset.caption if self.caption.nil?
   end
   
   def filter_handle

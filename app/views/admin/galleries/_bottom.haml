@@ -1,0 +1,4 @@
+%ul
+  - render_region :bottom do |bottom|
+    - bottom.add_gallery do
+      %li= link_to image('plus') + " " + t("add_gallery"), new_admin_gallery_path

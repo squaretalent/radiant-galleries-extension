@@ -9,7 +9,7 @@ module GalleryTags
   
   tag 'galleries:each' do |tag|
     content = ''
-    Galleries.each do |gallery|
+    Gallery.all.each do |gallery|
       tag.locals.gallery = gallery
       content << tag.expand
     end
@@ -46,6 +46,14 @@ module GalleryTags
   tag 'gallery:unless_items' do |tag|
     gallery = find_gallery(tag)
     tag.expand if !gallery || gallery.items.empty?
+  end
+  
+  tag 'if_gallery' do |tag|
+    gallery = find_gallery(tag)
+    
+    if gallery
+      tag.expand if tag.locals.gallery.handle == tag.locals.page.slug
+    end
   end
 
 protected

@@ -1,4 +1,42 @@
-= f.hidden_field :id, :class => 'clearable'
-= hidden_field_tag '_method', 'post', :id => 'gallery_method', :class => 'clearable'
-= f.text_field :title, :class => 'clearable'
-= f.submit 'Create'
+= render_region :form_top
+
+- render_region :form do |form|
+  - form.edit_title do
+    %p.title
+      %label{:for => 'gallery_title'}= t('title')
+      = fields.text_field :title, :class => 'textbox', :maxlenth => 255
+  
+  - form.edit_extended_metadata do
+    .drawer
+      .drawer_contents#attributes
+        %table.fieldset
+          = render :partial => 'meta_row', :collection => @meta, :locals => { :f => fields }
+          = render :partial => 'meta_row_layouts', :locals => { :f => fields }
+          = render_region :extended_metadata, :locals => { :f => fields }
+      .drawer_handle
+        %a.toggle{:href=>'#attributes', :rel=>"toggle[attributes]", :class=>"#{(meta_errors? ? 'less' : 'more')}"}= meta_label
+    
+  - form.edit_content do 
+    #tab_control
+      #tabs.tabs
+        #tab_toolbar
+      #pages.pages
+        = hidden_field_tag 'page_part_index_field' #important
+        = render :partial => 'part', :collection => @parts
+    
+- render_region :form_bottom do |form_bottom|
+  - form_bottom.edit_buttons do
+    - @buttons_partials.each do |partial|
+      = render :partial => partial, :locals => {:f => fields}
+    %p.buttons{:style=>"clear: left"}
+      = save_model_button(@gallery)
+      = save_model_and_continue_editing_button(@gallery)
+      = t('or')
+      = link_to t('cancel'), admin_galleries_url
+  - form_bottom.edit_timestamp do
+    = updated_stamp @gallery
+        
+#routes{:style => 'display:none'}
+
+  = hidden_field_tag 'admin_gallery_items_path', admin_gallery_items_path(@gallery)
+  = hidden_field_tag 'admin_gallery_items_sort_path', admin_gallery_items_sort_path(@gallery)

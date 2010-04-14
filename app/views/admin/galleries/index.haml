@@ -1,42 +1,27 @@
-- @page_title = 'Galleries - ' + default_page_title
-= render 'head'
+- @page_title = t('galleries') + ' - ' + default_page_title
 
-#galleries_content
-
-  %h2 Galleries
-  %p Galleries let you organise items you want your visitors to see
-
-  #galleries
-    #gallery_create.gallery.current{:'data-id' => '', :'data-title' => ''}
-      %span.title New Gallery
-    %ul#galleries_list
-      = render :partial => '/admin/galleries/excerpt', :collection => @galleries
-      - if @galleries.empty?
-        %li#galleries_empty.gallery
-          %span.title Nothing Yet
-    
-  #gallery
-    = render 'gallery'
-      
-#assets_content
-  
-  %h2 Items
-  %p Clicking on an item adds it to the gallery
-  
-  #assets
-    
-    #asset_create.asset
-      %span.title
-        %a.popup{:href => '#asset_create-popup'} New Item
-    
-    #assets_list_alt.asset{:'data-asset_id' => nil}
-      %span.title Select a Gallery
-      %sapn.caption Get started by selecting a gallery
-    
-    %ul#assets_list
-      
-    #asset_create-popup{ :style => 'display:none' }
-      = render :partial => 'admin/galleries/assets/asset'
-    
-#galleries_routes
-  = render :partial => '/admin/galleries/routes'
+.outset
+  = render_region :top
+  %table#site_map.index{:summary=>"Galleries created for the site"}
+    - render_region :thead do |thead|
+      %thead
+        %tr
+          - thead.title_header do
+            %th.page= t('gallery') 
+          - thead.description_header do
+            %th.description= t('handle')
+          - thead.modify_header do
+            %th.modify{:colspan=>'2'}= t('modify')
+    - render_region :tbody do |tbody|
+      - tbody.thumbnail_cell do; end
+      - tbody.title_cell do; end
+      - tbody.description_cell do; end
+      - tbody.remove_cell do; end
+      %tbody
+        - if @galleries.empty?
+          %tr
+            %td.empty{:colspan => admin.galleries.index.thead.length}= t('no_galleries')
+        - else
+          = render :partial => 'node', :collection => @galleries
+  #actions
+    = render 'bottom'

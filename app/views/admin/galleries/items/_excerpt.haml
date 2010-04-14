@@ -1,6 +1,6 @@
-%li.gallery_item{:id => "gallery_item_#{excerpt.id}", :'data-item_id' => excerpt.id, :'data-asset_it' => excerpt.image.id}
-  %img.image{:src => excerpt.image.thumbnail(:thumbnail), :alt => 'no image'}
-  %span.title= truncate excerpt.title, 30, '...'
-  %span.caption= excerpt.caption
+%li.item{:id => "item_#{excerpt.id}", :'data-id' => excerpt.id}
+  .wrapper
+    %span.buffer
+    %img.item{:src => excerpt.asset.thumbnail(:thumbnail), :alt => excerpt.asset.title}
   .actions
     %span.delete

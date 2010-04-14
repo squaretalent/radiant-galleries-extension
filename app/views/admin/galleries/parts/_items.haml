@@ -1,0 +1,5 @@
+- unless @gallery.new_record?
+  %ul#items_list
+    = render :partial => '/admin/galleries/items/excerpt', :collection => @gallery.items
+- else
+  %p You can add items once you've created the gallery

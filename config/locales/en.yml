@@ -1,0 +1,18 @@
+---
+en: 
+  gallery: 'Gallery'
+  galleries: 'Galleries'
+  title: 'Title'
+  handle: 'Handle'
+  caption: 'Caption'
+  custom_layout: 'Custom Layout'
+  custom_item_layout: 'Custom Item Layout'
+  add_gallery: 'Add Gallery'
+  new_gallery: 'New Gallery'
+  edit_gallery: 'Edit Gallery'
+  images: 'Images'
+  new_image: 'New Image'
+  upload_image: 'Upload Image'
+  text:
+    remove_gallery:
+      warning: "Deleting a gallery is irreversible, make sure you're sure."
