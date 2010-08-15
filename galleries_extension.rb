@@ -12,22 +12,6 @@ class GalleriesExtension < Radiant::Extension
   version "1.0.1"
   description "Photo Galleries using the paperclipped extension for assets"
   url "http://github.com/squaretalent/radiant-galleries-extension"
-
-  define_routes do |map|
-    map.namespace :admin, :member => {:remove => :get} do |admin|
-
-      admin.namespace :galleries do |galleries|
-        galleries.resources :assets, :controller => 'assets', :only => [ :index, :show, :create ]
-        galleries.sort 'sort.:format', :action => 'sort', :conditions => { :method => :put }
-      end
-      admin.resources :galleries do |gallery|
-        gallery.items_sort 'items/sort.:format', :controller => 'galleries/items', :action => 'sort', :conditions => { :method => :put }
-        gallery.resources :items, :controller => 'galleries/items', :only => [ :index, :create, :show, :destroy ]
-      end
-    end
-    map.connect 'news/galleries/:handle', :controller => 'galleries', :action => 'show'
-    map.connect 'news/galleries/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show'
-  end
   
   extension_config do |config|
     config.gem 'paperclip', :version => '~> 2.3.1.1', :source => 'http://gemcutter.org'
