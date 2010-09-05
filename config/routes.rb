@@ -11,8 +11,8 @@ ActionController::Routing::Routes.draw do |map|
       gallery.resources :items, :controller => 'galleries/items', :only => [ :index, :create, :show, :destroy ]
     end
   end
-  map.connect 'news/galleries/:handle', :controller => 'galleries', :action => 'show'
-  map.connect 'news/galleries/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show' 
+  map.connect 'galleries/:handle', :controller => 'galleries', :action => 'show'
+  map.connect 'galleries/:gallery_handle/:handle', :controller => 'galleries/items', :action => 'show' 
   
 end
 
